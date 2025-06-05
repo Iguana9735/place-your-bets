@@ -1,4 +1,4 @@
-import {Container, Grid, Stack, styled,} from "@mui/material";
+import {Button, ButtonGroup, Container, Grid, Stack, styled,} from "@mui/material";
 import PriceDisplay from "./PriceDisplay.tsx";
 import ScoreDisplay from "./ScoreDisplay.tsx";
 
@@ -15,6 +15,7 @@ function App() {
                         <Title> Is Bitcoin going up or down? Take a guess! </Title>
                     </Grid>
                     <Grid size={8}>
+                        <GuessButtons/>
                     </Grid>
                     <Grid size={4}>
                         <Stack spacing={2}>
@@ -26,6 +27,15 @@ function App() {
             </SiteContainer>
         </>
     )
+}
+
+const GuessButtons = () => {
+    return (
+        <ButtonGroup orientation="vertical" aria-label="Vertical button group">
+            <Button>Up</Button>,
+            <Button>Down</Button>,
+        </ButtonGroup>
+    );
 }
 
 const SiteContainer = styled(Container)(({theme}) => ({
