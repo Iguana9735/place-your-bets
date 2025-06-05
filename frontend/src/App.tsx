@@ -1,6 +1,7 @@
 import {Button, ButtonGroup, Container, Grid, Stack, styled,} from "@mui/material";
-import PriceDisplay from "./PriceDisplay.tsx";
-import ScoreDisplay from "./ScoreDisplay.tsx";
+import PriceDisplay from "./components/PriceDisplay.tsx";
+import ScoreDisplay from "./components/ScoreDisplay.tsx";
+import GuessList from "./components/GuessList.tsx";
 
 function App() {
 
@@ -15,7 +16,10 @@ function App() {
                         <Title> Is Bitcoin going up or down? Take a guess! </Title>
                     </Grid>
                     <Grid size={8}>
-                        <GuessButtons/>
+                        <Stack spacing={2}>
+                            <GuessButtons/>
+                            <GuessList/>
+                        </Stack>
                     </Grid>
                     <Grid size={4}>
                         <Stack spacing={2}>
