@@ -1,17 +1,13 @@
 import ValueDisplay from "./ValueDisplay.tsx";
+import {formatMoney} from "../utils/formatters.ts";
 
 type Props = {
     price: number
 }
 
 function PriceDisplay({price}: Props) {
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    });
-
     return (
-        <ValueDisplay title={"Current BTC price"} value={formatter.format(price)}/>
+        <ValueDisplay title={"Current BTC price"} value={formatMoney(price)}/>
     )
 }
 

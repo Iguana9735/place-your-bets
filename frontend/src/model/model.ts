@@ -1,9 +1,13 @@
 type Guess = {
     id: string,
-    submittedAt: number,
+    submittedAt: UnixSeconds,
     priceAtSubmission: number,
     direction: "UP" | "DOWN",
-    resolvedAt?: number,
+    resolvedAt?: UnixSeconds,
     priceAtResolution?: number,
     result?: "CORRECT" | "INCORRECT"
 }
+
+type UnixSeconds = number
+
+export type {Guess, UnixSeconds}

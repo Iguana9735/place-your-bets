@@ -1,4 +1,6 @@
 import {Box, Paper, Stack} from "@mui/material";
+import type {Guess} from "../model/model.ts";
+import {formatInstant, formatMoney} from "../utils/formatters.ts";
 
 function GuessList() {
 
@@ -44,11 +46,11 @@ function GuessList() {
 
 const GuessItem = ({guess}: { guess: Guess }) => {
     return <Paper>
-        <div>Submitted at: {guess.submittedAt}</div>
+        <div>Submitted at: {formatInstant(guess.submittedAt)}</div>
         <div>Direction: {guess.direction}</div>
-        <div>Price at submission: {guess.priceAtSubmission}</div>
-        <div>Resolved at: {guess.resolvedAt}</div>
-        <div>Price at resolution: {guess.priceAtResolution}</div>
+        <div>Price at submission: {formatMoney(guess.priceAtSubmission)}</div>
+        <div>Resolved at: {guess.resolvedAt ? formatInstant(guess.resolvedAt) : ""}</div>
+        <div>Price at resolution: {guess.priceAtResolution ? formatMoney(guess.priceAtResolution) : ""}</div>
         <div>Result: {guess.result}</div>
     </Paper>
 }
