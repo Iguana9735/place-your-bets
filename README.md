@@ -13,12 +13,12 @@ I don't have a lot of experience with JavaScript/TypeScript backends, but this
 seems to be the tech stack for this company, so it would be the logical choice.
 
 The nature of this app could benefit from push messages (possibly websockets).
-However, for the sake of simplicity, we will use only HTTP calls. We'll get
+However, for the sake of simplicity, this will use only HTTP calls. It'll get
 close enough to real-time by polling the backend very frequently.
 
 Both frontend and backend will be deployed to AWS.
 
-For the backend, we will attempt a ports-and-adapters (hexagonal) architecture.
+For the backend, I will attempt a ports-and-adapters (hexagonal) architecture.
 
 The persistence mechanism remains to be decided.
 
