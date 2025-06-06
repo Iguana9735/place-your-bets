@@ -49,18 +49,18 @@ const GuessContainer = styled(Paper)(({theme}) => ({
     ...theme.typography.body1
 }));
 
-const DetailsSection = styled("div")(({theme}) => ({
+const DetailsSection = styled("div")(() => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "stretch"
 }));
 
-const DetailsSide = styled("div")(({theme}) => ({
+const DetailsSide = styled("div")(() => ({
     flex: 2
 }));
 
-const DetailsMiddle = styled("div")(({theme}) => ({
+const DetailsMiddle = styled("div")(() => ({
     textAlign: "center",
     flex: "1 0 auto"
 }));
