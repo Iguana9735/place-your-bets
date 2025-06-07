@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: Place-your-bets service
+  version: 1.0.0
+  description: An API intended to be consumed by the place-your-bets frontend
+
+paths:
+  /info:
+    get:
+      summary: Get all the info the frontend needs in one call
+      operationId: getInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bitcoinPrice:
+                    type: number
+                    nullable: true
+                    description: The current Bitcoin price, or null if unavailable
