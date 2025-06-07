@@ -1,0 +1,3 @@
+type ForGettingCurrentPrice = {
+    getCurrentPrice: () => number
+}

@@ -1,8 +1,9 @@
-import {sayHello} from '../app/app'
 import {describe, expect, it} from "@jest/globals";
+import {App} from "../app/app";
 
 describe("app", () => {
-    it("says hello", () => {
-        expect(sayHello("Bob")).toBe("Hello, Bob!")
+    it("provides the current bitcoin price", () => {
+        const app = new App();
+        expect(typeof app.getCurrentPrice()).toBe("number")
     })
 })
