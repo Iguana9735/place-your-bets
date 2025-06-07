@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "generate-api": "openapi-typescript ../api.yml -o src/drivingAdapters/express/generated/api.d.ts"
   },
   "keywords": [],
   "author": "",
