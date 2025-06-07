@@ -1,3 +1,3 @@
-type ForGettingCurrentPrice = {
+export type ForGettingCurrentPrice = {
     getCurrentPrice: () => number
 }
