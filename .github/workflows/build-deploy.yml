@@ -65,7 +65,7 @@ jobs:
         working-directory: backend
 
       - name: Compile
-        run: npm run compile
+        run: npm run build
         working-directory: backend
 
       - name: Test
