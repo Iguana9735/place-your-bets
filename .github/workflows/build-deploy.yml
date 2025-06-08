@@ -73,8 +73,8 @@ jobs:
         working-directory: backend
 
       - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest .
+        run: docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest .
+        working-directory: backend
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
