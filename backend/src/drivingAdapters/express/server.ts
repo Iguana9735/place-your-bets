@@ -6,8 +6,13 @@ const expressServer = express();
 const PORT = process.env.PORT || 3000;
 
 type InfoResponse = paths['/info']['get']['responses']['200']['content']['application/json'];
+type HealthResponse = paths['/health']['get']['responses']['200']['content']['application/json'];
 
 export function startServer(forGettingPrice: ForGettingCurrentPrice) {
+
+    expressServer.get('/health', (req: Request, res: Response<HealthResponse>) => {
+        res.json({});
+    });
 
     expressServer.get('/info', (req: Request, res: Response<InfoResponse>) => {
         res.json({bitcoinPrice: forGettingPrice.getCurrentPrice()});

@@ -5,6 +5,19 @@ info:
   description: An API intended to be consumed by the place-your-bets frontend
 
 paths:
+
+  /health:
+    get:
+      summary: Just an endpoint to see that the backend is running. Always returns 200
+      operationId: health
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+
   /info:
     get:
       summary: Get all the info the frontend needs in one call
