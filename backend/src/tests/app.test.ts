@@ -1,14 +1,28 @@
 import {describe, expect, it} from "@jest/globals";
 import {App} from "../app/app";
+import FakeBitcoinPriceSource from "../drivenAdapters/FakeBitcoinPriceSource";
 
 describe("app", () => {
     it("provides the current bitcoin price", () => {
-        const app = new App();
+        const fakeBitCoinPriceSource: FakeBitcoinPriceSource = new FakeBitcoinPriceSource();
+        const app = new App(fakeBitCoinPriceSource);
         expect(typeof app.getClientInfo().currentBitcoinPrice).toBe("number")
     })
 
+    it("obtains the bitcoin price from an external source", () => {
+        // Given
+        const fakeBitCoinPriceSource: FakeBitcoinPriceSource = new FakeBitcoinPriceSource();
+        fakeBitCoinPriceSource.setPrice(123321)
+        const app = new App(fakeBitCoinPriceSource);
+
+        // When
+        const clientInfo = app.getClientInfo();
+
+        // Then
+        expect(clientInfo.currentBitcoinPrice).toBe(123321)
+    })
+
     // TODO
-    // Obtains the bitcoin price from an external source
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Returns an empty list of guesses
     // Accepts a new guess
