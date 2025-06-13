@@ -4,7 +4,7 @@ import {App} from "../app/app";
 describe("app", () => {
     it("provides the current bitcoin price", () => {
         const app = new App();
-        expect(typeof app.getCurrentPrice()).toBe("number")
+        expect(typeof app.getClientInfo().currentBitcoinPrice).toBe("number")
     })
 
     // TODO
