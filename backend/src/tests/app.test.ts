@@ -1,19 +1,24 @@
-import {describe, expect, it} from "@jest/globals";
+import {beforeEach, describe, expect, it} from "@jest/globals";
 import {App} from "../app/app";
 import FakeBitcoinPriceSource from "../drivenAdapters/FakeBitcoinPriceSource";
 
 describe("app", () => {
+
+    let app: App
+    let fakeBitcoinPriceSource: FakeBitcoinPriceSource
+
+    beforeEach(() => {
+        fakeBitcoinPriceSource = new FakeBitcoinPriceSource();
+        app = new App(fakeBitcoinPriceSource);
+    })
+
     it("provides the current bitcoin price", () => {
-        const fakeBitCoinPriceSource: FakeBitcoinPriceSource = new FakeBitcoinPriceSource();
-        const app = new App(fakeBitCoinPriceSource);
         expect(typeof app.getClientInfo().currentBitcoinPrice).toBe("number")
     })
 
     it("obtains the bitcoin price from an external source", () => {
         // Given
-        const fakeBitCoinPriceSource: FakeBitcoinPriceSource = new FakeBitcoinPriceSource();
-        fakeBitCoinPriceSource.setPrice(123321)
-        const app = new App(fakeBitCoinPriceSource);
+        fakeBitcoinPriceSource.setPrice(123321)
 
         // When
         const clientInfo = app.getClientInfo();
