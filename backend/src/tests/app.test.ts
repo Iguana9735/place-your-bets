@@ -15,92 +15,96 @@ describe('app', () => {
         app = new App(fakeBitcoinPriceSource, fakeClock, new InMemoryDatabase())
     })
 
-    it('provides the current bitcoin price', async () => {
-        // When
-        const clientInfo = await app.getClientInfo('client-A')
+    describe('bitcoin price', () => {
+        it('provides the current bitcoin price', async () => {
+            // When
+            const clientInfo = await app.getClientInfo('client-A')
 
-        // Then
-        expect(typeof clientInfo.currentBitcoinPrice).toBe('number')
+            // Then
+            expect(typeof clientInfo.currentBitcoinPrice).toBe('number')
+        })
+
+        it('obtains the bitcoin price from an external source', async () => {
+            // Given
+            fakeBitcoinPriceSource.setPrice(123321)
+
+            // When
+            const clientInfo = await app.getClientInfo('client-A')
+
+            // Then
+            expect(clientInfo.currentBitcoinPrice).toBe(123321)
+        })
     })
 
-    it('obtains the bitcoin price from an external source', async () => {
-        // Given
-        fakeBitcoinPriceSource.setPrice(123321)
+    describe('entering and querying guesses', () => {
+        it('returns a list of guesses', async () => {
+            // When
+            const clientInfo = await app.getClientInfo('client-A')
 
-        // When
-        const clientInfo = await app.getClientInfo('client-A')
+            // Then
+            expect(clientInfo.recentGuesses).toBeDefined()
+        })
 
-        // Then
-        expect(clientInfo.currentBitcoinPrice).toBe(123321)
-    })
+        it('accepts a new guess', () => {
+            expect(
+                async () => await app.submitNewGuess('client-A', 'UP')
+            ).not.toThrow()
+        })
 
-    it('returns a list of guesses', async () => {
-        // When
-        const clientInfo = await app.getClientInfo('client-A')
+        it('returns the submitted guess', async () => {
+            // Given
+            await app.submitNewGuess('client-A', 'UP')
 
-        // Then
-        expect(clientInfo.recentGuesses).toBeDefined()
-    })
+            // When
+            const clientInfo = await app.getClientInfo('client-A')
 
-    it('accepts a new guess', () => {
-        expect(
-            async () => await app.submitNewGuess('client-A', 'UP')
-        ).not.toThrow()
-    })
+            // Then
+            expect(clientInfo.recentGuesses).toHaveLength(1)
+        })
 
-    it('returns the submitted guess', async () => {
-        // Given
-        await app.submitNewGuess('client-A', 'UP')
+        it('knows the price at which guesses were submitted', async () => {
+            // Given
+            fakeBitcoinPriceSource.setPrice(111)
 
-        // When
-        const clientInfo = await app.getClientInfo('client-A')
+            // When
+            await app.submitNewGuess('client-A', 'UP')
 
-        // Then
-        expect(clientInfo.recentGuesses).toHaveLength(1)
-    })
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
+        })
 
-    it('knows the price at which guesses were submitted', async () => {
-        // Given
-        fakeBitcoinPriceSource.setPrice(111)
+        it('knows the time at which guesses were submitted', async () => {
+            // Given
+            fakeClock.setTime(new Date('2020-01-01T00:00:00Z'))
 
-        // When
-        await app.submitNewGuess('client-A', 'UP')
+            // When
+            await app.submitNewGuess('client-A', 'UP')
 
-        // Then
-        const clientInfo = await app.getClientInfo('client-A')
-        expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
-    })
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].submittedAt).toEqual(
+                new Date('2020-01-01T00:00:00Z')
+            )
+        })
 
-    it('knows the time at which guesses were submitted', async () => {
-        // Given
-        fakeClock.setTime(new Date('2020-01-01T00:00:00Z'))
+        it('accepts guesses for "UP"', async () => {
+            // When
+            await app.submitNewGuess('client-A', 'UP')
 
-        // When
-        await app.submitNewGuess('client-A', 'UP')
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].direction).toEqual('UP')
+        })
 
-        // Then
-        const clientInfo = await app.getClientInfo('client-A')
-        expect(clientInfo.recentGuesses[0].submittedAt).toEqual(
-            new Date('2020-01-01T00:00:00Z')
-        )
-    })
+        it('accepts guesses for "DOWN"', async () => {
+            // When
+            await app.submitNewGuess('client-A', 'DOWN')
 
-    it('accepts guesses for "UP"', async () => {
-        // When
-        await app.submitNewGuess('client-A', 'UP')
-
-        // Then
-        const clientInfo = await app.getClientInfo('client-A')
-        expect(clientInfo.recentGuesses[0].direction).toEqual('UP')
-    })
-
-    it('accepts guesses for "DOWN"', async () => {
-        // When
-        await app.submitNewGuess('client-A', 'DOWN')
-
-        // Then
-        const clientInfo = await app.getClientInfo('client-A')
-        expect(clientInfo.recentGuesses[0].direction).toEqual('DOWN')
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].direction).toEqual('DOWN')
+        })
     })
 
     it('keeps separate guesses for separate clients', async () => {
@@ -135,6 +139,7 @@ describe('app', () => {
     // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
     // Resolves a guess after 60 seconds if the price has changed
+    // Does not resolve a guess before 60 seconds, even if the price has changed
     // Resolves a guess when the price changes if the price hasn't changed after 60 seconds
     // If after 60 seconds, the price has changed but has also returned to the original price,
     //  then it is considered to not have changed, i.e. the guess doesn't resolve until the price changes again
