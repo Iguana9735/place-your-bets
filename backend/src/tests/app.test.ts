@@ -35,6 +35,17 @@ describe("app", () => {
         expect(() => app.submitNewGuess()).not.toThrow()
     })
 
+    it("returns the submitted guess", () => {
+        // Given
+        app.submitNewGuess()
+
+        // When
+        const clientInfo = app.getClientInfo()
+
+        // Then
+        expect(clientInfo.recentGuesses).toHaveLength(1)
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Accepts a new guess

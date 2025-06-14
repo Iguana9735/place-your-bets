@@ -5,6 +5,8 @@ export class App implements ForPlacingBets {
 
     forGettingBitcoinPrice: ForGettingBitcoinPrice
 
+    guesses: any[] = []
+
     constructor(forGettingBitcoinPrice: ForGettingBitcoinPrice) {
         this.forGettingBitcoinPrice = forGettingBitcoinPrice
     }
@@ -12,10 +14,11 @@ export class App implements ForPlacingBets {
     getClientInfo(): ClientInfo {
         return {
             currentBitcoinPrice: this.forGettingBitcoinPrice.getBitcoinPrice(),
-            recentGuesses: []
+            recentGuesses: this.guesses
         }
     }
 
     submitNewGuess() {
+        this.guesses.push({})
     }
 }
