@@ -13,4 +13,12 @@ export default class InMemoryDatabase implements ForPersisting {
         this.guesses[clientId].push(guess)
         return Promise.resolve()
     }
+
+    getAllGuesses(): Promise<Guess[]> {
+        const allGuesses = Object.entries(this.guesses)
+            .map((it) => it[1])
+            .flat()
+
+        return Promise.resolve(allGuesses)
+    }
 }

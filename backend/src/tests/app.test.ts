@@ -146,6 +146,23 @@ describe('app', () => {
             ).toBeUndefined()
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
         })
+
+        it('resolves a guess after 60 seconds if the price has changed', async () => {
+            // Given
+            const initialTime = new Date('2020-01-01T00:00:00Z')
+            fakeClock.setTime(initialTime)
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            // When
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses).toHaveLength(1)
+            expect(clientInfo.recentGuesses[0].result).toBeDefined()
+        })
     })
 
     // TODO
@@ -158,6 +175,7 @@ describe('app', () => {
     // Resolves a guess when the price changes if the price hasn't changed after 60 seconds
     // If after 60 seconds, the price has changed but has also returned to the original price,
     //  then it is considered to not have changed, i.e. the guess doesn't resolve until the price changes again
+    // Guesses that are already resolved are resolved again
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
     // Resolved guesses have the time at which the guess was resolved
@@ -166,4 +184,5 @@ describe('app', () => {
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
     // The score goes up or down as guesses are resolved
+    // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })

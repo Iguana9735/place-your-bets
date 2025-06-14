@@ -20,6 +20,8 @@ export class App implements ForPlacingGuesses {
         this.forGettingBitcoinPrice = forGettingBitcoinPrice
         this.forGettingTheTime = forGettingTheTime
         this.forPersisting = forPersisting
+
+        this.forGettingTheTime.listenToTicks(() => this.resolveGuesses())
     }
 
     async getClientInfo(clientId: string): Promise<ClientInfo> {
@@ -39,5 +41,10 @@ export class App implements ForPlacingGuesses {
             direction: direction,
         }
         await this.forPersisting.insertGuess(clientId, newGuess)
+    }
+
+    private async resolveGuesses() {
+        const allGuesses = await this.forPersisting.getAllGuesses()
+        allGuesses.forEach((guess) => (guess.result = 'CORRECT'))
     }
 }
