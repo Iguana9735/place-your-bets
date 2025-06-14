@@ -15,7 +15,7 @@ export function startServer(forPlacingBets: ForPlacingBets) {
     });
 
     expressServer.get('/info', async (req: Request, res: Response<InfoResponse>) => {
-        let clientInfo = await forPlacingBets.getClientInfo();
+        const clientInfo = await forPlacingBets.getClientInfo();
         res.json({bitcoinPrice: clientInfo.currentBitcoinPrice});
     });
 

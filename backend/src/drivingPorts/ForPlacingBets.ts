@@ -1,5 +1,6 @@
 export type ClientInfo = {
     currentBitcoinPrice: number
+    // eslint-disable-next-line
     recentGuesses: any[]
 }
 

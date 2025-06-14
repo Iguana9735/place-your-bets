@@ -33,7 +33,7 @@ describe("app", () => {
 
     it("returns a list of guesses", async () => {
         // When
-        let clientInfo = await app.getClientInfo();
+        const clientInfo = await app.getClientInfo();
 
         // Then
         expect(clientInfo.recentGuesses).toBeDefined()

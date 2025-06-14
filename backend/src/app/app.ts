@@ -5,6 +5,7 @@ export class App implements ForPlacingBets {
 
     forGettingBitcoinPrice: ForGettingBitcoinPrice
 
+    // eslint-disable-next-line
     guesses: any[] = []
 
     constructor(forGettingBitcoinPrice: ForGettingBitcoinPrice) {
