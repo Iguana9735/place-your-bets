@@ -133,6 +133,21 @@ describe('app', () => {
         expect(clientInfo.recentGuesses).toHaveLength(1)
     })
 
+    describe('guess resolution', () => {
+        it('new guesses are unresolved at first', async () => {
+            // Given
+            await app.submitNewGuess('client-A', 'UP')
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].resolvedAt).toBeUndefined()
+            expect(
+                clientInfo.recentGuesses[0].priceAtResolution
+            ).toBeUndefined()
+            expect(clientInfo.recentGuesses[0].result).toBeUndefined()
+        })
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Returns the guess when asked
