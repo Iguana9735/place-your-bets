@@ -42,12 +42,12 @@ describe('app', () => {
     })
 
     it('accepts a new guess', () => {
-        expect(async () => await app.submitNewGuess()).not.toThrow()
+        expect(async () => await app.submitNewGuess('UP')).not.toThrow()
     })
 
     it('returns the submitted guess', async () => {
         // Given
-        await app.submitNewGuess()
+        await app.submitNewGuess('UP')
 
         // When
         const clientInfo = await app.getClientInfo()
@@ -56,24 +56,24 @@ describe('app', () => {
         expect(clientInfo.recentGuesses).toHaveLength(1)
     })
 
-    it('new guesses remember the price at which they were submitted', async () => {
+    it('knows the price at which guesses were submitted', async () => {
         // Given
         fakeBitcoinPriceSource.setPrice(111)
 
         // When
-        await app.submitNewGuess()
+        await app.submitNewGuess('UP')
 
         // Then
         const clientInfo = await app.getClientInfo()
         expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
     })
 
-    it('new guesses remember the time at which they were submitted', async () => {
+    it('knows the time at which guesses were submitted', async () => {
         // Given
         fakeClock.setTime(new Date('2020-01-01T00:00:00Z'))
 
         // When
-        await app.submitNewGuess()
+        await app.submitNewGuess('UP')
 
         // Then
         const clientInfo = await app.getClientInfo()
@@ -82,9 +82,26 @@ describe('app', () => {
         )
     })
 
+    it('accepts guesses for "UP"', async () => {
+        // When
+        await app.submitNewGuess('UP')
+
+        // Then
+        const clientInfo = await app.getClientInfo()
+        expect(clientInfo.recentGuesses[0].direction).toEqual('UP')
+    })
+
+    it('accepts guesses for "DOWN"', async () => {
+        // When
+        await app.submitNewGuess('DOWN')
+
+        // Then
+        const clientInfo = await app.getClientInfo()
+        expect(clientInfo.recentGuesses[0].direction).toEqual('DOWN')
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // New guesses are up or down
     // Persists the guess to an external repository
     // Returns the guess when asked
     // Different clients have different lists of guesses

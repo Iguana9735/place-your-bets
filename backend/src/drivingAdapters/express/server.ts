@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import type { paths } from './generated/api'
-import { ForPlacingBets } from '../../drivingPorts/ForPlacingBets'
+import { ForPlacingGuesses } from '../../drivingPorts/ForPlacingGuesses'
 
 const expressServer = express()
 const PORT = process.env.PORT || 3000
@@ -10,7 +10,7 @@ type InfoResponse =
 type HealthResponse =
     paths['/health']['get']['responses']['200']['content']['application/json']
 
-export function startServer(forPlacingBets: ForPlacingBets) {
+export function startServer(forPlacingBets: ForPlacingGuesses) {
     expressServer.get(
         '/health',
         (req: Request, res: Response<HealthResponse>) => {

@@ -1,9 +1,12 @@
-import { ClientInfo, ForPlacingBets } from '../drivingPorts/ForPlacingBets'
+import {
+    ClientInfo,
+    ForPlacingGuesses,
+} from '../drivingPorts/ForPlacingGuesses'
 import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
-import Guess from './Guess'
+import Guess, { GuessDirection } from './Guess'
 import { ForGettingTheTime } from '../drivenPorts/ForGettingTheTime'
 
-export class App implements ForPlacingBets {
+export class App implements ForPlacingGuesses {
     private forGettingBitcoinPrice: ForGettingBitcoinPrice
     private forGettingTheTime: ForGettingTheTime
 
@@ -25,11 +28,12 @@ export class App implements ForPlacingBets {
         })
     }
 
-    async submitNewGuess() {
+    async submitNewGuess(direction: GuessDirection) {
         const newGuess: Guess = {
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
             submittedAt: this.forGettingTheTime.getTime(),
+            direction: direction,
         }
         this.guesses.push(newGuess)
     }
