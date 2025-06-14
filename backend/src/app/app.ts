@@ -5,19 +5,23 @@ import {
 import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
 import Guess, { GuessDirection } from './Guess'
 import { ForGettingTheTime } from '../drivenPorts/ForGettingTheTime'
+import { ForPersisting } from '../drivenPorts/ForPersisting'
 
 export class App implements ForPlacingGuesses {
     private forGettingBitcoinPrice: ForGettingBitcoinPrice
     private forGettingTheTime: ForGettingTheTime
+    private forPersisting: ForPersisting
 
     guesses: Record<string, Guess[]> = {}
 
     constructor(
         forGettingBitcoinPrice: ForGettingBitcoinPrice,
-        forGettingTheTime: ForGettingTheTime
+        forGettingTheTime: ForGettingTheTime,
+        forPersisting: ForPersisting
     ) {
         this.forGettingBitcoinPrice = forGettingBitcoinPrice
         this.forGettingTheTime = forGettingTheTime
+        this.forPersisting = forPersisting
     }
 
     async getClientInfo(clientId: string): Promise<ClientInfo> {
