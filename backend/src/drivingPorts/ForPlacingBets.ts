@@ -1,5 +1,6 @@
 export type ClientInfo = {
     currentBitcoinPrice: number
+    recentGuesses: any[]
 }
 
 export type ForPlacingBets = {

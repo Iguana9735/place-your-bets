@@ -11,7 +11,8 @@ export class App implements ForPlacingBets {
 
     getClientInfo(): ClientInfo {
         return {
-            currentBitcoinPrice: this.forGettingBitcoinPrice.getBitcoinPrice()
+            currentBitcoinPrice: this.forGettingBitcoinPrice.getBitcoinPrice(),
+            recentGuesses: []
         }
     }
 }

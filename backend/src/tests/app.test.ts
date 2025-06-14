@@ -27,9 +27,12 @@ describe("app", () => {
         expect(clientInfo.currentBitcoinPrice).toBe(123321)
     })
 
+    it("returns a list of guesses", () => {
+        expect(app.getClientInfo().recentGuesses).toBeDefined()
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Returns an empty list of guesses
     // Accepts a new guess
     // Persists the guess to an external repository
     // Returns the guess when asked
