@@ -21,7 +21,7 @@ export function startServer(forPlacingBets: ForPlacingGuesses) {
     expressServer.get(
         '/info',
         async (req: Request, res: Response<InfoResponse>) => {
-            const clientInfo = await forPlacingBets.getClientInfo()
+            const clientInfo = await forPlacingBets.getClientInfo('todo')
             res.json({ bitcoinPrice: clientInfo.currentBitcoinPrice })
         }
     )

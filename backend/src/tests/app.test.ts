@@ -16,7 +16,7 @@ describe('app', () => {
 
     it('provides the current bitcoin price', async () => {
         // When
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
 
         // Then
         expect(typeof clientInfo.currentBitcoinPrice).toBe('number')
@@ -27,7 +27,7 @@ describe('app', () => {
         fakeBitcoinPriceSource.setPrice(123321)
 
         // When
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
 
         // Then
         expect(clientInfo.currentBitcoinPrice).toBe(123321)
@@ -35,22 +35,24 @@ describe('app', () => {
 
     it('returns a list of guesses', async () => {
         // When
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
 
         // Then
         expect(clientInfo.recentGuesses).toBeDefined()
     })
 
     it('accepts a new guess', () => {
-        expect(async () => await app.submitNewGuess('UP')).not.toThrow()
+        expect(
+            async () => await app.submitNewGuess('client-A', 'UP')
+        ).not.toThrow()
     })
 
     it('returns the submitted guess', async () => {
         // Given
-        await app.submitNewGuess('UP')
+        await app.submitNewGuess('client-A', 'UP')
 
         // When
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
 
         // Then
         expect(clientInfo.recentGuesses).toHaveLength(1)
@@ -61,10 +63,10 @@ describe('app', () => {
         fakeBitcoinPriceSource.setPrice(111)
 
         // When
-        await app.submitNewGuess('UP')
+        await app.submitNewGuess('client-A', 'UP')
 
         // Then
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
         expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
     })
 
@@ -73,10 +75,10 @@ describe('app', () => {
         fakeClock.setTime(new Date('2020-01-01T00:00:00Z'))
 
         // When
-        await app.submitNewGuess('UP')
+        await app.submitNewGuess('client-A', 'UP')
 
         // Then
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
         expect(clientInfo.recentGuesses[0].submittedAt).toEqual(
             new Date('2020-01-01T00:00:00Z')
         )
@@ -84,27 +86,38 @@ describe('app', () => {
 
     it('accepts guesses for "UP"', async () => {
         // When
-        await app.submitNewGuess('UP')
+        await app.submitNewGuess('client-A', 'UP')
 
         // Then
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
         expect(clientInfo.recentGuesses[0].direction).toEqual('UP')
     })
 
     it('accepts guesses for "DOWN"', async () => {
         // When
-        await app.submitNewGuess('DOWN')
+        await app.submitNewGuess('client-A', 'DOWN')
 
         // Then
-        const clientInfo = await app.getClientInfo()
+        const clientInfo = await app.getClientInfo('client-A')
         expect(clientInfo.recentGuesses[0].direction).toEqual('DOWN')
+    })
+
+    it('keeps separate guesses for separate clients', async () => {
+        // When
+        await app.submitNewGuess('client-A', 'UP')
+        await app.submitNewGuess('client-B', 'DOWN')
+
+        // Then
+        const infoClientA = await app.getClientInfo('client-A')
+        const infoClientB = await app.getClientInfo('client-B')
+        expect(infoClientA.recentGuesses[0].direction).toBe('UP')
+        expect(infoClientB.recentGuesses[0].direction).toBe('DOWN')
     })
 
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Persists the guess to an external repository
     // Returns the guess when asked
-    // Different clients have different lists of guesses
     // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
     // Resolves a guess after 60 seconds if the price has changed
