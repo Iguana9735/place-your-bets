@@ -39,12 +39,12 @@ describe('app', () => {
     })
 
     it('accepts a new guess', () => {
-        expect(() => app.submitNewGuess()).not.toThrow()
+        expect(async () => await app.submitNewGuess()).not.toThrow()
     })
 
     it('returns the submitted guess', async () => {
         // Given
-        app.submitNewGuess()
+        await app.submitNewGuess()
 
         // When
         const clientInfo = await app.getClientInfo()
@@ -58,7 +58,7 @@ describe('app', () => {
         fakeBitcoinPriceSource.setPrice(111)
 
         // When
-        app.submitNewGuess()
+        await app.submitNewGuess()
 
         // Then
         const clientInfo = await app.getClientInfo()
