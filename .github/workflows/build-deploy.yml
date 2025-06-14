@@ -73,7 +73,7 @@ jobs:
         working-directory: backend
 
       - name: Lint
-        run: npm lint
+        run: npm run lint
         working-directory: backend
 
       - name: Build Docker image
