@@ -11,11 +11,11 @@ export class App implements ForPlacingBets {
         this.forGettingBitcoinPrice = forGettingBitcoinPrice
     }
 
-    getClientInfo(): ClientInfo {
-        return {
-            currentBitcoinPrice: this.forGettingBitcoinPrice.getBitcoinPrice(),
+    async getClientInfo(): Promise<ClientInfo> {
+        return Promise.resolve({
+            currentBitcoinPrice: await this.forGettingBitcoinPrice.getBitcoinPrice(),
             recentGuesses: this.guesses
-        }
+        })
     }
 
     submitNewGuess() {

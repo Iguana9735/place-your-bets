@@ -1,3 +1,3 @@
 export type ForGettingBitcoinPrice = {
-    getBitcoinPrice: () => number
+    getBitcoinPrice: () => Promise<number>
 }

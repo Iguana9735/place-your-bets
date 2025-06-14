@@ -4,6 +4,6 @@ export type ClientInfo = {
 }
 
 export type ForPlacingBets = {
-    getClientInfo: () => ClientInfo
+    getClientInfo: () => Promise<ClientInfo>
     submitNewGuess: () => void
 }

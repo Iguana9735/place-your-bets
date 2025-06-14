@@ -12,35 +12,43 @@ describe("app", () => {
         app = new App(fakeBitcoinPriceSource);
     })
 
-    it("provides the current bitcoin price", () => {
-        expect(typeof app.getClientInfo().currentBitcoinPrice).toBe("number")
+    it("provides the current bitcoin price", async () => {
+        // When
+        const clientInfo = await app.getClientInfo();
+
+        // Then
+        expect(typeof clientInfo.currentBitcoinPrice).toBe("number")
     })
 
-    it("obtains the bitcoin price from an external source", () => {
+    it("obtains the bitcoin price from an external source", async () => {
         // Given
         fakeBitcoinPriceSource.setPrice(123321)
 
         // When
-        const clientInfo = app.getClientInfo();
+        const clientInfo = await app.getClientInfo();
 
         // Then
         expect(clientInfo.currentBitcoinPrice).toBe(123321)
     })
 
-    it("returns a list of guesses", () => {
-        expect(app.getClientInfo().recentGuesses).toBeDefined()
+    it("returns a list of guesses", async () => {
+        // When
+        let clientInfo = await app.getClientInfo();
+
+        // Then
+        expect(clientInfo.recentGuesses).toBeDefined()
     })
 
     it("accepts a new guess", () => {
         expect(() => app.submitNewGuess()).not.toThrow()
     })
 
-    it("returns the submitted guess", () => {
+    it("returns the submitted guess", async () => {
         // Given
         app.submitNewGuess()
 
         // When
-        const clientInfo = app.getClientInfo()
+        const clientInfo = await app.getClientInfo()
 
         // Then
         expect(clientInfo.recentGuesses).toHaveLength(1)
