@@ -1,14 +1,17 @@
 import { beforeEach, describe, expect, it } from '@jest/globals'
 import { App } from '../app/app'
 import FakeBitcoinPriceSource from '../drivenAdapters/FakeBitcoinPriceSource'
+import FakeClock from '../drivenAdapters/FakeClock'
 
 describe('app', () => {
     let app: App
     let fakeBitcoinPriceSource: FakeBitcoinPriceSource
+    let fakeClock: FakeClock
 
     beforeEach(() => {
         fakeBitcoinPriceSource = new FakeBitcoinPriceSource()
-        app = new App(fakeBitcoinPriceSource)
+        fakeClock = new FakeClock()
+        app = new App(fakeBitcoinPriceSource, fakeClock)
     })
 
     it('provides the current bitcoin price', async () => {
@@ -65,9 +68,22 @@ describe('app', () => {
         expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
     })
 
+    it('new guesses remember the time at which they were submitted', async () => {
+        // Given
+        fakeClock.setTime(new Date('2020-01-01T00:00:00Z'))
+
+        // When
+        await app.submitNewGuess()
+
+        // Then
+        const clientInfo = await app.getClientInfo()
+        expect(clientInfo.recentGuesses[0].submittedAt).toEqual(
+            new Date('2020-01-01T00:00:00Z')
+        )
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // New guesses have a time
     // New guesses are up or down
     // Persists the guess to an external repository
     // Returns the guess when asked

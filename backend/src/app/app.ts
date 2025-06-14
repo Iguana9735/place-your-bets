@@ -1,14 +1,20 @@
 import { ClientInfo, ForPlacingBets } from '../drivingPorts/ForPlacingBets'
 import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
 import Guess from './Guess'
+import { ForGettingTheTime } from '../drivenPorts/ForGettingTheTime'
 
 export class App implements ForPlacingBets {
-    forGettingBitcoinPrice: ForGettingBitcoinPrice
+    private forGettingBitcoinPrice: ForGettingBitcoinPrice
+    private forGettingTheTime: ForGettingTheTime
 
     guesses: Guess[] = []
 
-    constructor(forGettingBitcoinPrice: ForGettingBitcoinPrice) {
+    constructor(
+        forGettingBitcoinPrice: ForGettingBitcoinPrice,
+        forGettingTheTime: ForGettingTheTime
+    ) {
         this.forGettingBitcoinPrice = forGettingBitcoinPrice
+        this.forGettingTheTime = forGettingTheTime
     }
 
     async getClientInfo(): Promise<ClientInfo> {
@@ -23,6 +29,7 @@ export class App implements ForPlacingBets {
         const newGuess: Guess = {
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
+            submittedAt: this.forGettingTheTime.getTime(),
         }
         this.guesses.push(newGuess)
     }
