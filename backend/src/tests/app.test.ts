@@ -53,11 +53,21 @@ describe('app', () => {
         expect(clientInfo.recentGuesses).toHaveLength(1)
     })
 
+    it('new guesses remember the price at which they were submitted', async () => {
+        // Given
+        fakeBitcoinPriceSource.setPrice(111)
+
+        // When
+        app.submitNewGuess()
+
+        // Then
+        const clientInfo = await app.getClientInfo()
+        expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Accepts a new guess
     // New guesses have a time
-    // New guesses have a price
     // New guesses are up or down
     // Persists the guess to an external repository
     // Returns the guess when asked

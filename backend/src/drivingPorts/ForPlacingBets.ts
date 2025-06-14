@@ -1,7 +1,8 @@
+import Guess from '../app/Guess'
+
 export type ClientInfo = {
     currentBitcoinPrice: number
-    // eslint-disable-next-line
-    recentGuesses: any[]
+    recentGuesses: Guess[]
 }
 
 export type ForPlacingBets = {

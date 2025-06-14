@@ -1,11 +1,11 @@
 import { ClientInfo, ForPlacingBets } from '../drivingPorts/ForPlacingBets'
 import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
+import Guess from './Guess'
 
 export class App implements ForPlacingBets {
     forGettingBitcoinPrice: ForGettingBitcoinPrice
 
-    // eslint-disable-next-line
-    guesses: any[] = []
+    guesses: Guess[] = []
 
     constructor(forGettingBitcoinPrice: ForGettingBitcoinPrice) {
         this.forGettingBitcoinPrice = forGettingBitcoinPrice
@@ -19,7 +19,11 @@ export class App implements ForPlacingBets {
         })
     }
 
-    submitNewGuess() {
-        this.guesses.push({})
+    async submitNewGuess() {
+        const newGuess: Guess = {
+            priceAtSubmission:
+                await this.forGettingBitcoinPrice.getBitcoinPrice(),
+        }
+        this.guesses.push(newGuess)
     }
 }
