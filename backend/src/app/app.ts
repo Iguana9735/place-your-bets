@@ -12,8 +12,6 @@ export class App implements ForPlacingGuesses {
     private forGettingTheTime: ForGettingTheTime
     private forPersisting: ForPersisting
 
-    guesses: Record<string, Guess[]> = {}
-
     constructor(
         forGettingBitcoinPrice: ForGettingBitcoinPrice,
         forGettingTheTime: ForGettingTheTime,
@@ -25,26 +23,21 @@ export class App implements ForPlacingGuesses {
     }
 
     async getClientInfo(clientId: string): Promise<ClientInfo> {
-        this.initializeClient(clientId)
         return Promise.resolve({
             currentBitcoinPrice:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
-            recentGuesses: this.guesses[clientId],
+            recentGuesses:
+                await this.forPersisting.getRecentGuessesOfClient(clientId),
         })
     }
 
     async submitNewGuess(clientId: string, direction: GuessDirection) {
-        this.initializeClient(clientId)
         const newGuess: Guess = {
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
             submittedAt: this.forGettingTheTime.getTime(),
             direction: direction,
         }
-        this.guesses[clientId].push(newGuess)
-    }
-
-    private initializeClient(clientId: string) {
-        this.guesses[clientId] ||= []
+        await this.forPersisting.insertGuess(clientId, newGuess)
     }
 }

@@ -115,9 +115,22 @@ describe('app', () => {
         expect(infoClientB.recentGuesses[0].direction).toBe('DOWN')
     })
 
+    it('persists the guesses to an external repository', async () => {
+        // Given
+        const database = new InMemoryDatabase()
+        const appA = new App(fakeBitcoinPriceSource, fakeClock, database)
+        await appA.submitNewGuess('client-A', 'UP')
+
+        // When
+        const appB = new App(fakeBitcoinPriceSource, fakeClock, database)
+
+        // Then
+        const clientInfo = await appB.getClientInfo('client-A')
+        expect(clientInfo.recentGuesses).toHaveLength(1)
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Persists the guess to an external repository
     // Returns the guess when asked
     // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
