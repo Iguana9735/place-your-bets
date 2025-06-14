@@ -1,49 +1,48 @@
-import {beforeEach, describe, expect, it} from "@jest/globals";
-import {App} from "../app/app";
-import FakeBitcoinPriceSource from "../drivenAdapters/FakeBitcoinPriceSource";
+import { beforeEach, describe, expect, it } from '@jest/globals'
+import { App } from '../app/app'
+import FakeBitcoinPriceSource from '../drivenAdapters/FakeBitcoinPriceSource'
 
-describe("app", () => {
-
+describe('app', () => {
     let app: App
     let fakeBitcoinPriceSource: FakeBitcoinPriceSource
 
     beforeEach(() => {
-        fakeBitcoinPriceSource = new FakeBitcoinPriceSource();
-        app = new App(fakeBitcoinPriceSource);
+        fakeBitcoinPriceSource = new FakeBitcoinPriceSource()
+        app = new App(fakeBitcoinPriceSource)
     })
 
-    it("provides the current bitcoin price", async () => {
+    it('provides the current bitcoin price', async () => {
         // When
-        const clientInfo = await app.getClientInfo();
+        const clientInfo = await app.getClientInfo()
 
         // Then
-        expect(typeof clientInfo.currentBitcoinPrice).toBe("number")
+        expect(typeof clientInfo.currentBitcoinPrice).toBe('number')
     })
 
-    it("obtains the bitcoin price from an external source", async () => {
+    it('obtains the bitcoin price from an external source', async () => {
         // Given
         fakeBitcoinPriceSource.setPrice(123321)
 
         // When
-        const clientInfo = await app.getClientInfo();
+        const clientInfo = await app.getClientInfo()
 
         // Then
         expect(clientInfo.currentBitcoinPrice).toBe(123321)
     })
 
-    it("returns a list of guesses", async () => {
+    it('returns a list of guesses', async () => {
         // When
-        const clientInfo = await app.getClientInfo();
+        const clientInfo = await app.getClientInfo()
 
         // Then
         expect(clientInfo.recentGuesses).toBeDefined()
     })
 
-    it("accepts a new guess", () => {
+    it('accepts a new guess', () => {
         expect(() => app.submitNewGuess()).not.toThrow()
     })
 
-    it("returns the submitted guess", async () => {
+    it('returns the submitted guess', async () => {
         // Given
         app.submitNewGuess()
 
@@ -77,5 +76,4 @@ describe("app", () => {
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
     // The score goes up or down as guesses are resolved
-
 })

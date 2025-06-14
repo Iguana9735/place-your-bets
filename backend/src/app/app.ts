@@ -1,8 +1,7 @@
-import {ClientInfo, ForPlacingBets} from "../drivingPorts/ForPlacingBets";
-import {ForGettingBitcoinPrice} from "../drivenPorts/ForGettingBitcoinPrice";
+import { ClientInfo, ForPlacingBets } from '../drivingPorts/ForPlacingBets'
+import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
 
 export class App implements ForPlacingBets {
-
     forGettingBitcoinPrice: ForGettingBitcoinPrice
 
     // eslint-disable-next-line
@@ -14,8 +13,9 @@ export class App implements ForPlacingBets {
 
     async getClientInfo(): Promise<ClientInfo> {
         return Promise.resolve({
-            currentBitcoinPrice: await this.forGettingBitcoinPrice.getBitcoinPrice(),
-            recentGuesses: this.guesses
+            currentBitcoinPrice:
+                await this.forGettingBitcoinPrice.getBitcoinPrice(),
+            recentGuesses: this.guesses,
         })
     }
 
