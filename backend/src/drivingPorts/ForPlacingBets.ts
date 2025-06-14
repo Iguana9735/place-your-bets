@@ -5,4 +5,5 @@ export type ClientInfo = {
 
 export type ForPlacingBets = {
     getClientInfo: () => ClientInfo
+    submitNewGuess: () => void
 }

@@ -15,4 +15,7 @@ export class App implements ForPlacingBets {
             recentGuesses: []
         }
     }
+
+    submitNewGuess() {
+    }
 }

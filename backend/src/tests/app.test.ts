@@ -31,9 +31,16 @@ describe("app", () => {
         expect(app.getClientInfo().recentGuesses).toBeDefined()
     })
 
+    it("accepts a new guess", () => {
+        expect(() => app.submitNewGuess()).not.toThrow()
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Accepts a new guess
+    // New guesses have a time
+    // New guesses have a price
+    // New guesses are up or down
     // Persists the guess to an external repository
     // Returns the guess when asked
     // Different clients have different lists of guesses
