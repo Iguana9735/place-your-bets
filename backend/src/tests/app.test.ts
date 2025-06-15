@@ -45,10 +45,8 @@ describe('app', () => {
             expect(clientInfo.recentGuesses).toBeDefined()
         })
 
-        it('accepts a new guess', () => {
-            expect(
-                async () => await app.submitNewGuess('client-A', 'UP')
-            ).not.toThrow()
+        it('accepts a new guess', async () => {
+            await app.submitNewGuess('client-A', 'UP')
         })
 
         it('returns the submitted guess', async () => {
@@ -310,9 +308,28 @@ describe('app', () => {
         })
     })
 
+    describe('simultaneous guesses', () => {
+        it('does not accept a guess if there is a current guess open for that client', async () => {
+            // Given
+            await app.submitNewGuess('client-A', 'UP')
+
+            // Then
+            await expect(
+                app.submitNewGuess('client-A', 'DOWN')
+            ).rejects.toBeDefined()
+        })
+
+        it('accepts a guess even if a different client already has an open guess', async () => {
+            // Given
+            await app.submitNewGuess('client-A', 'UP')
+
+            // Then (doesn't throw)
+            await app.submitNewGuess('client-B', 'UP')
+        })
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers

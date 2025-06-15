@@ -37,6 +37,12 @@ export class App implements ForPlacingGuesses {
         clientId: string,
         direction: GuessDirection
     ): Promise<void> {
+        const pastGuesses =
+            await this.forPersisting.getRecentGuessesOfClient(clientId)
+        if (pastGuesses.length > 0) {
+            return Promise.reject('Only one guess at a time is allowed')
+        }
+
         const newGuess: GuessInsert = {
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
