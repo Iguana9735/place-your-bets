@@ -57,30 +57,32 @@ export class App implements ForPlacingGuesses {
         const allGuesses = await this.forPersisting.getAllGuesses()
         const now = this.forGettingTheTime.getTime()
         const currentPrice = await this.forGettingBitcoinPrice.getBitcoinPrice()
-        await Promise.all(
-            allGuesses
-                .filter((guess) => !guess.result)
-                .filter((guess) => {
-                    const notBefore = new Date(
-                        guess.submittedAt.getTime() + 60 * 1000
-                    )
-                    return notBefore < now
-                })
-                .filter((guess) => guess.priceAtSubmission !== currentPrice)
-                .map((guess) => {
-                    const actualPriceDirection =
-                        currentPrice > guess.priceAtSubmission ? 'UP' : 'DOWN'
-                    const result =
-                        guess.direction === actualPriceDirection
-                            ? 'CORRECT'
-                            : 'INCORRECT'
 
-                    return this.forPersisting.updateGuess(guess.id, {
-                        resolvedAt: now,
-                        priceAtResolution: currentPrice,
-                        result: result,
-                    })
-                })
-        )
+        for (const guess of allGuesses) {
+            if (guess.result) {
+                continue
+            }
+
+            const notBefore = new Date(guess.submittedAt.getTime() + 60 * 1000)
+            if (notBefore >= now) {
+                continue
+            }
+            if (guess.priceAtSubmission === currentPrice) {
+                continue
+            }
+
+            const actualPriceDirection =
+                currentPrice > guess.priceAtSubmission ? 'UP' : 'DOWN'
+            const result =
+                guess.direction === actualPriceDirection
+                    ? 'CORRECT'
+                    : 'INCORRECT'
+
+            await this.forPersisting.updateGuess(guess.id, {
+                resolvedAt: now,
+                priceAtResolution: currentPrice,
+                result: result,
+            })
+        }
     }
 }
