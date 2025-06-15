@@ -3,7 +3,7 @@ import {
     ForPlacingGuesses,
 } from '../drivingPorts/ForPlacingGuesses'
 import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
-import { GuessDirection } from './Guess'
+import Guess, { GuessDirection, GuessResult } from './Guess'
 import { ForGettingTheTime } from '../drivenPorts/ForGettingTheTime'
 import ForPersisting, { GuessInsert } from '../drivenPorts/ForPersisting'
 
@@ -55,34 +55,40 @@ export class App implements ForPlacingGuesses {
 
     private async resolveGuesses() {
         const allGuesses = await this.forPersisting.getAllGuesses()
-        const now = this.forGettingTheTime.getTime()
-        const currentPrice = await this.forGettingBitcoinPrice.getBitcoinPrice()
 
         for (const guess of allGuesses) {
-            if (guess.result) {
-                continue
-            }
-
-            const notBefore = new Date(guess.submittedAt.getTime() + 60 * 1000)
-            if (notBefore >= now) {
-                continue
-            }
-            if (guess.priceAtSubmission === currentPrice) {
-                continue
-            }
-
-            const actualPriceDirection =
-                currentPrice > guess.priceAtSubmission ? 'UP' : 'DOWN'
-            const result =
-                guess.direction === actualPriceDirection
-                    ? 'CORRECT'
-                    : 'INCORRECT'
-
-            await this.forPersisting.updateGuess(guess.id, {
-                resolvedAt: now,
-                priceAtResolution: currentPrice,
-                result: result,
-            })
+            await this.resolveGuessIfPossible(guess)
         }
+    }
+
+    private async resolveGuessIfPossible(
+        guess: Guess
+    ): Promise<GuessResult | undefined> {
+        const now = this.forGettingTheTime.getTime()
+        const currentPrice = await this.forGettingBitcoinPrice.getBitcoinPrice()
+        if (guess.result) {
+            return
+        }
+
+        const notBefore = new Date(guess.submittedAt.getTime() + 60 * 1000)
+        if (notBefore >= now) {
+            return
+        }
+        if (guess.priceAtSubmission === currentPrice) {
+            return
+        }
+
+        const actualPriceDirection =
+            currentPrice > guess.priceAtSubmission ? 'UP' : 'DOWN'
+        const result =
+            guess.direction === actualPriceDirection ? 'CORRECT' : 'INCORRECT'
+
+        await this.forPersisting.updateGuess(guess.id, {
+            resolvedAt: now,
+            priceAtResolution: currentPrice,
+            result: result,
+        })
+
+        return result
     }
 }
