@@ -433,6 +433,22 @@ describe('app', () => {
             clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.score).toBe(2)
         })
+
+        it('score goes down when bad guesses are made', async () => {
+            // When
+            await makeGuess('player-A', 'UP', -1)
+
+            // Then
+            let clientInfo = await app.getClientInfo('player-A')
+            expect(clientInfo.score).toBe(-1)
+
+            // When
+            await makeGuess('player-A', 'DOWN', 1)
+
+            // Then
+            clientInfo = await app.getClientInfo('player-A')
+            expect(clientInfo.score).toBe(-2)
+        })
     })
 
     // TODO
@@ -440,8 +456,6 @@ describe('app', () => {
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
     // List of guesses returns only the 5 most recent guesses
-    // Players start with a score of 0
-    // The score goes up or down as guesses are resolved
     // Scoring is independent across clients
     // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })

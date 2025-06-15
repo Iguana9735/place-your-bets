@@ -31,13 +31,20 @@ export class GuessResolver {
     private async resolveAndScore(guess: Guess): Promise<void> {
         const result: GuessResult | undefined =
             await this.resolveGuessIfPossible(guess)
-        if (result) {
-            await this.forPersisting.setScore(
-                guess.playerId,
-                ((await this.forPersisting.getScore(guess.playerId)) || 0) + 1
-            )
+        if (result === 'CORRECT') {
+            await this.updatePlayerScore(guess.playerId, 1)
+        }
+        if (result === 'INCORRECT') {
+            await this.updatePlayerScore(guess.playerId, -1)
         }
         return
+    }
+
+    private async updatePlayerScore(playerId: string, delta: 1 | -1) {
+        await this.forPersisting.setScore(
+            playerId,
+            ((await this.forPersisting.getScore(playerId)) || 0) + delta
+        )
     }
 
     private async resolveGuessIfPossible(
