@@ -5,7 +5,7 @@ import FakeBitcoinPriceSource from './drivenAdapters/FakeBitcoinPriceSource'
 import { ForGettingTheTime } from './drivenPorts/ForGettingTheTime'
 import FakeClock from './drivenAdapters/FakeClock'
 import InMemoryDatabase from './drivenAdapters/InMemoryDatabase'
-import { ForPersisting } from './drivenPorts/ForPersisting'
+import ForPersisting from './drivenPorts/ForPersisting'
 
 const forGettingBitcoinPrice: ForGettingBitcoinPrice =
     new FakeBitcoinPriceSource()

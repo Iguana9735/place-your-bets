@@ -1,6 +1,7 @@
-import { ForPersisting } from '../drivenPorts/ForPersisting'
+import ForPersisting, { GuessInsert } from '../drivenPorts/ForPersisting'
 import Guess from '../app/Guess'
 import _ from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 
 type GuessWithClientId = Guess & {
     clientId: string
@@ -17,9 +18,10 @@ export default class InMemoryDatabase implements ForPersisting {
         )
     }
 
-    insertGuess(clientId: string, guess: Guess): Promise<void> {
+    insertGuess(clientId: string, guess: GuessInsert): Promise<void> {
         this.guesses.push({
             ...guess,
+            id: uuidv4(),
             clientId: clientId,
         })
         return Promise.resolve()

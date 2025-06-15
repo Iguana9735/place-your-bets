@@ -3,9 +3,9 @@ import {
     ForPlacingGuesses,
 } from '../drivingPorts/ForPlacingGuesses'
 import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
-import Guess, { GuessDirection } from './Guess'
+import { GuessDirection } from './Guess'
 import { ForGettingTheTime } from '../drivenPorts/ForGettingTheTime'
-import { ForPersisting } from '../drivenPorts/ForPersisting'
+import ForPersisting, { GuessInsert } from '../drivenPorts/ForPersisting'
 
 export class App implements ForPlacingGuesses {
     private forGettingBitcoinPrice: ForGettingBitcoinPrice
@@ -34,7 +34,7 @@ export class App implements ForPlacingGuesses {
     }
 
     async submitNewGuess(clientId: string, direction: GuessDirection) {
-        const newGuess: Guess = {
+        const newGuess: GuessInsert = {
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
             submittedAt: this.forGettingTheTime.getTime(),
