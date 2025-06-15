@@ -147,7 +147,7 @@ describe('app', () => {
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
         })
 
-        it.skip('resolves a guess after 60 seconds if the price has changed', async () => {
+        it('resolves a guess after 60 seconds if the price has changed', async () => {
             // Given
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)

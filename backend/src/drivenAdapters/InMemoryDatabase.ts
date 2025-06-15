@@ -1,4 +1,7 @@
-import ForPersisting, { GuessInsert } from '../drivenPorts/ForPersisting'
+import ForPersisting, {
+    GuessInsert,
+    GuessUpdate,
+} from '../drivenPorts/ForPersisting'
 import Guess from '../app/Guess'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
@@ -24,6 +27,14 @@ export default class InMemoryDatabase implements ForPersisting {
             id: uuidv4(),
             clientId: clientId,
         })
+        return Promise.resolve()
+    }
+
+    updateGuess(guessId: string, update: GuessUpdate) {
+        const savedGuess = this.guesses.find((guess) => guess.id === guessId)
+        if (savedGuess) {
+            Object.assign(savedGuess, update)
+        }
         return Promise.resolve()
     }
 

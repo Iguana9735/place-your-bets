@@ -1,5 +1,7 @@
 export type GuessDirection = 'UP' | 'DOWN'
 
+export type GuessResult = 'CORRECT' | 'INCORRECT'
+
 type Guess = {
     id: string
     priceAtSubmission: number
@@ -7,7 +9,7 @@ type Guess = {
     direction: GuessDirection
     resolvedAt?: Date
     priceAtResolution?: number
-    result?: 'CORRECT' | 'INCORRECT'
+    result?: GuessResult
 }
 
 export default Guess

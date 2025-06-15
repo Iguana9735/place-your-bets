@@ -45,6 +45,12 @@ export class App implements ForPlacingGuesses {
 
     private async resolveGuesses() {
         const allGuesses = await this.forPersisting.getAllGuesses()
-        allGuesses.forEach((guess) => (guess.result = 'CORRECT'))
+        await Promise.all(
+            allGuesses.map((guess) => {
+                return this.forPersisting.updateGuess(guess.id, {
+                    result: 'CORRECT',
+                })
+            })
+        )
     }
 }
