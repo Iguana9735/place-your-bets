@@ -17,7 +17,7 @@ export default class FakeClock implements ForGettingTheTime {
     }
 
     advanceSeconds(seconds: number) {
-        this.time = new Date(this.time.getUTCMilliseconds() + seconds * 1000)
+        this.time = new Date(this.time.getTime() + seconds * 1000)
     }
 
     async tick() {

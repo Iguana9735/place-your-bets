@@ -51,7 +51,7 @@ export class App implements ForPlacingGuesses {
             allGuesses
                 .filter((guess) => {
                     const notBefore = new Date(
-                        guess.submittedAt.getUTCMilliseconds() + 60 * 1000
+                        guess.submittedAt.getTime() + 60 * 1000
                     )
                     return notBefore < now
                 })
