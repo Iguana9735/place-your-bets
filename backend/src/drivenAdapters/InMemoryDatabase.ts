@@ -1,16 +1,17 @@
 import { ForPersisting } from '../drivenPorts/ForPersisting'
 import Guess from '../app/Guess'
+import _ from 'lodash'
 
 export default class InMemoryDatabase implements ForPersisting {
     private guesses: Record<string, Guess[]> = {}
 
     getRecentGuessesOfClient(clientId: string): Promise<Guess[]> {
-        return Promise.resolve(this.guesses[clientId] || [])
+        return Promise.resolve(_.cloneDeep(this.guesses[clientId] || []))
     }
 
     insertGuess(clientId: string, guess: Guess): Promise<void> {
         this.guesses[clientId] ||= []
-        this.guesses[clientId].push(guess)
+        this.guesses[clientId].push(_.cloneDeep(guess))
         return Promise.resolve()
     }
 
@@ -19,6 +20,6 @@ export default class InMemoryDatabase implements ForPersisting {
             .map((it) => it[1])
             .flat()
 
-        return Promise.resolve(allGuesses)
+        return Promise.resolve(_.cloneDeep(allGuesses))
     }
 }
