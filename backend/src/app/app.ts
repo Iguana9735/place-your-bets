@@ -45,12 +45,20 @@ export class App implements ForPlacingGuesses {
 
     private async resolveGuesses() {
         const allGuesses = await this.forPersisting.getAllGuesses()
+        const now = this.forGettingTheTime.getTime()
         await Promise.all(
-            allGuesses.map((guess) => {
-                return this.forPersisting.updateGuess(guess.id, {
-                    result: 'CORRECT',
+            allGuesses
+                .filter((guess) => {
+                    const notBefore = new Date(
+                        guess.submittedAt.getUTCMilliseconds() + 60 * 1000
+                    )
+                    return notBefore < now
                 })
-            })
+                .map((guess) => {
+                    return this.forPersisting.updateGuess(guess.id, {
+                        result: 'CORRECT',
+                    })
+                })
         )
     }
 }
