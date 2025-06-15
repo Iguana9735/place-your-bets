@@ -251,6 +251,42 @@ describe('app', () => {
             clientInfo = await app.getClientInfo('client-A')
             expect(clientInfo.recentGuesses[0].result).toBe('CORRECT')
         })
+
+        it('resolved guesses have the time at which the guess was resolved', async () => {
+            // Given
+            const initialTime = new Date('2020-01-01T00:00:00Z')
+            fakeClock.setTime(initialTime)
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            // When
+            fakeBitcoinPriceSource.setPrice(101)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].resolvedAt).toEqual(
+                new Date('2020-01-01T00:01:20Z')
+            )
+        })
+
+        it('resolved guesses have the price at which the guess was resolved', async () => {
+            // Given
+            const initialTime = new Date('2020-01-01T00:00:00Z')
+            fakeClock.setTime(initialTime)
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            // When
+            fakeBitcoinPriceSource.setPrice(101)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].priceAtResolution).toEqual(101)
+        })
     })
 
     // TODO
@@ -260,8 +296,6 @@ describe('app', () => {
     // Guesses that are already resolved are not resolved again
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
-    // Resolved guesses have the time at which the guess was resolved
-    // Resolved guesses have the price at which the guess was resolved
     // Resolved guesses are resolved as either "CORRECT" or "INCORRECT"
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
