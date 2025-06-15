@@ -45,20 +45,33 @@ export class App implements ForPlacingGuesses {
         }
 
         const newGuess: GuessInsert = {
+            playerId: playerId,
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
             submittedAt: this.forGettingTheTime.getTime(),
             direction: direction,
         }
-        await this.forPersisting.insertGuess(playerId, newGuess)
+        await this.forPersisting.insertGuess(newGuess)
     }
 
     private async resolveGuesses() {
         const allGuesses = await this.forPersisting.getAllGuesses()
 
         for (const guess of allGuesses) {
-            await this.resolveGuessIfPossible(guess)
+            await this.resolveAndScore(guess)
         }
+    }
+
+    private async resolveAndScore(guess: Guess): Promise<void> {
+        const result: GuessResult | undefined =
+            await this.resolveGuessIfPossible(guess)
+        if (result) {
+            await this.forPersisting.setScore(
+                guess.playerId,
+                ((await this.forPersisting.getScore(guess.playerId)) || 0) + 1
+            )
+        }
+        return
     }
 
     private async resolveGuessIfPossible(

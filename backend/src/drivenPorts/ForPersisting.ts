@@ -9,7 +9,7 @@ export type GuessUpdate = {
 }
 
 type ForPersisting = {
-    insertGuess(playerId: string, guess: GuessInsert): Promise<void>
+    insertGuess(guess: GuessInsert): Promise<void>
     updateGuess(guessId: string, update: GuessUpdate): Promise<void>
     getRecentGuessesOfClient(playerId: string): Promise<Guess[]>
     getAllGuesses(): Promise<Guess[]>

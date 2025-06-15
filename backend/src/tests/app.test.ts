@@ -418,16 +418,16 @@ describe('app', () => {
             expect(clientInfo.score).toBe(0)
         })
 
-        it.skip('score goes up when good guesses are made', async () => {
+        it('score goes up when good guesses are made', async () => {
             // When
-            makeGuess('player-A', 'UP', 1)
+            await makeGuess('player-A', 'UP', 1)
 
             // Then
             let clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.score).toBe(1)
 
             // When
-            makeGuess('player-A', 'DOWN', -1)
+            await makeGuess('player-A', 'DOWN', -1)
 
             // Then
             clientInfo = await app.getClientInfo('player-A')

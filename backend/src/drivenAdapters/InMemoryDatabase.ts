@@ -22,11 +22,10 @@ export default class InMemoryDatabase implements ForPersisting {
         )
     }
 
-    insertGuess(playerId: string, guess: GuessInsert): Promise<void> {
+    insertGuess(guess: GuessInsert): Promise<void> {
         this.guesses.push({
             ...guess,
             id: uuidv4(),
-            playerId: playerId,
         })
         return Promise.resolve()
     }

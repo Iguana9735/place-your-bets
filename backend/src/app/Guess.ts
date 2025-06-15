@@ -4,6 +4,7 @@ export type GuessResult = 'CORRECT' | 'INCORRECT'
 
 type Guess = {
     id: string
+    playerId: string
     priceAtSubmission: number
     submittedAt: Date
     direction: GuessDirection
