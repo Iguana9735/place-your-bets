@@ -287,13 +287,33 @@ describe('app', () => {
             const clientInfo = await app.getClientInfo('client-A')
             expect(clientInfo.recentGuesses[0].priceAtResolution).toEqual(101)
         })
+
+        it('resolves guesses only once', async () => {
+            // Given
+            const initialTime = new Date('2020-01-01T00:00:00Z')
+            fakeClock.setTime(initialTime)
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            fakeBitcoinPriceSource.setPrice(101)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // When
+            fakeBitcoinPriceSource.setPrice(102)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].priceAtResolution).toEqual(101)
+        })
     })
 
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
-    // Guesses that are already resolved are not resolved again
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
     // Resolved guesses are resolved as either "CORRECT" or "INCORRECT"

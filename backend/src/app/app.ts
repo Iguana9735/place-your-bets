@@ -49,6 +49,7 @@ export class App implements ForPlacingGuesses {
         const currentPrice = await this.forGettingBitcoinPrice.getBitcoinPrice()
         await Promise.all(
             allGuesses
+                .filter((guess) => !guess.result)
                 .filter((guess) => {
                     const notBefore = new Date(
                         guess.submittedAt.getTime() + 60 * 1000
