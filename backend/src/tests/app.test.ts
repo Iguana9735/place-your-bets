@@ -18,7 +18,7 @@ describe('app', () => {
     describe('bitcoin price', () => {
         it('provides the current bitcoin price', async () => {
             // When
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
 
             // Then
             expect(typeof clientInfo.currentBitcoinPrice).toBe('number')
@@ -29,7 +29,7 @@ describe('app', () => {
             fakeBitcoinPriceSource.setPrice(123321)
 
             // When
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
 
             // Then
             expect(clientInfo.currentBitcoinPrice).toBe(123321)
@@ -39,22 +39,22 @@ describe('app', () => {
     describe('entering and querying guesses', () => {
         it('returns a list of guesses', async () => {
             // When
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
 
             // Then
             expect(clientInfo.recentGuesses).toBeDefined()
         })
 
         it('accepts a new guess', async () => {
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
         })
 
         it('returns the submitted guess', async () => {
             // Given
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
 
             // Then
             expect(clientInfo.recentGuesses).toHaveLength(1)
@@ -65,10 +65,10 @@ describe('app', () => {
             fakeBitcoinPriceSource.setPrice(111)
 
             // When
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].priceAtSubmission).toBe(111)
         })
 
@@ -77,10 +77,10 @@ describe('app', () => {
             fakeClock.setTime(new Date('2020-01-01T00:00:00Z'))
 
             // When
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].submittedAt).toEqual(
                 new Date('2020-01-01T00:00:00Z')
             )
@@ -88,31 +88,31 @@ describe('app', () => {
 
         it('accepts guesses for "UP"', async () => {
             // When
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].direction).toEqual('UP')
         })
 
         it('accepts guesses for "DOWN"', async () => {
             // When
-            await app.submitNewGuess('client-A', 'DOWN')
+            await app.submitNewGuess('player-A', 'DOWN')
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].direction).toEqual('DOWN')
         })
     })
 
-    it('keeps separate guesses for separate clients', async () => {
+    it('keeps separate guesses for separate players', async () => {
         // When
-        await app.submitNewGuess('client-A', 'UP')
-        await app.submitNewGuess('client-B', 'DOWN')
+        await app.submitNewGuess('player-A', 'UP')
+        await app.submitNewGuess('player-B', 'DOWN')
 
         // Then
-        const infoClientA = await app.getClientInfo('client-A')
-        const infoClientB = await app.getClientInfo('client-B')
+        const infoClientA = await app.getClientInfo('player-A')
+        const infoClientB = await app.getClientInfo('player-B')
         expect(infoClientA.recentGuesses[0].direction).toBe('UP')
         expect(infoClientB.recentGuesses[0].direction).toBe('DOWN')
     })
@@ -121,23 +121,23 @@ describe('app', () => {
         // Given
         const database = new InMemoryDatabase()
         const appA = new App(fakeBitcoinPriceSource, fakeClock, database)
-        await appA.submitNewGuess('client-A', 'UP')
+        await appA.submitNewGuess('player-A', 'UP')
 
         // When
         const appB = new App(fakeBitcoinPriceSource, fakeClock, database)
 
         // Then
-        const clientInfo = await appB.getClientInfo('client-A')
+        const clientInfo = await appB.getClientInfo('player-A')
         expect(clientInfo.recentGuesses).toHaveLength(1)
     })
 
     describe('guess resolution', () => {
         it('new guesses are unresolved at first', async () => {
             // Given
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].resolvedAt).toBeUndefined()
             expect(
                 clientInfo.recentGuesses[0].priceAtResolution
@@ -150,7 +150,7 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeBitcoinPriceSource.setPrice(101)
@@ -158,7 +158,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses).toHaveLength(1)
             expect(clientInfo.recentGuesses[0].result).toBe('CORRECT')
         })
@@ -168,7 +168,7 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeBitcoinPriceSource.setPrice(101)
@@ -176,7 +176,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses).toHaveLength(1)
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
         })
@@ -186,14 +186,14 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeClock.advanceSeconds(80)
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses).toHaveLength(1)
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
         })
@@ -202,7 +202,7 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             let clientInfo
 
@@ -211,7 +211,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // ... nothing happens
-            clientInfo = await app.getClientInfo('client-A')
+            clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
 
             // 10 seconds pass (+20), price goes down
@@ -220,7 +220,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // ... nothing happens
-            clientInfo = await app.getClientInfo('client-A')
+            clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
 
             // 10 seconds pass (+30), price returns to the original value
@@ -229,7 +229,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // ... nothing happens
-            clientInfo = await app.getClientInfo('client-A')
+            clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
 
             // Several minutes pass without the price changing...
@@ -237,7 +237,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // ... nothing happens
-            clientInfo = await app.getClientInfo('client-A')
+            clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
 
             // Price goes up...
@@ -246,7 +246,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // ... guess is resolved
-            clientInfo = await app.getClientInfo('client-A')
+            clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toBe('CORRECT')
         })
 
@@ -255,7 +255,7 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeBitcoinPriceSource.setPrice(101)
@@ -263,7 +263,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].resolvedAt).toEqual(
                 new Date('2020-01-01T00:01:20Z')
             )
@@ -274,7 +274,7 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeBitcoinPriceSource.setPrice(101)
@@ -282,7 +282,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].priceAtResolution).toEqual(101)
         })
 
@@ -291,7 +291,7 @@ describe('app', () => {
             const initialTime = new Date('2020-01-01T00:00:00Z')
             fakeClock.setTime(initialTime)
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             fakeBitcoinPriceSource.setPrice(101)
             fakeClock.advanceSeconds(80)
@@ -303,7 +303,7 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].priceAtResolution).toEqual(101)
         })
     })
@@ -312,7 +312,7 @@ describe('app', () => {
         it('is correct if the user guessed up and the price went up', async () => {
             // Given
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeBitcoinPriceSource.setPrice(101)
@@ -320,14 +320,14 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toEqual('CORRECT')
         })
 
         it('is correct if the user guessed down and the price went down', async () => {
             // Given
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'DOWN')
+            await app.submitNewGuess('player-A', 'DOWN')
 
             // When
             fakeBitcoinPriceSource.setPrice(99)
@@ -335,13 +335,13 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toEqual('CORRECT')
         })
         it('is incorrect if the user guessed up and the price went down', async () => {
             // Given
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // When
             fakeBitcoinPriceSource.setPrice(99)
@@ -349,13 +349,13 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toEqual('INCORRECT')
         })
         it('is incorrect if the user guessed down and the price went up', async () => {
             // Given
             fakeBitcoinPriceSource.setPrice(100)
-            await app.submitNewGuess('client-A', 'DOWN')
+            await app.submitNewGuess('player-A', 'DOWN')
 
             // When
             fakeBitcoinPriceSource.setPrice(101)
@@ -363,45 +363,45 @@ describe('app', () => {
             await fakeClock.tick()
 
             // Then
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.recentGuesses[0].result).toEqual('INCORRECT')
         })
     })
 
     describe('simultaneous guesses', () => {
-        it('does not accept a guess if there is a current guess unresolved for that client', async () => {
+        it('does not accept a guess if there is a current guess unresolved for that player', async () => {
             // Given
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // Then
             await expect(
-                app.submitNewGuess('client-A', 'DOWN')
+                app.submitNewGuess('player-A', 'DOWN')
             ).rejects.toBeDefined()
         })
 
-        it('accepts a guess even if a different client already has an unresolved guess', async () => {
+        it('accepts a guess even if a different player already has an unresolved guess', async () => {
             // Given
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
 
             // Then (doesn't throw)
-            await app.submitNewGuess('client-B', 'UP')
+            await app.submitNewGuess('player-B', 'UP')
         })
 
-        it('accepts a guess even if a the client has past guesses, as long as they have resolved already', async () => {
+        it('accepts a guess even if a the player has past guesses, as long as they have resolved already', async () => {
             // Given
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
             fakeBitcoinPriceSource.setPrice(123)
             fakeClock.advanceSeconds(80)
             await fakeClock.tick()
 
             // Then (doesn't throw)
-            await app.submitNewGuess('client-A', 'UP')
+            await app.submitNewGuess('player-A', 'UP')
         })
     })
 
     describe('scoring', () => {
         it('initial score is 0', async () => {
-            const clientInfo = await app.getClientInfo('client-A')
+            const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.score).toBe(0)
         })
     })
@@ -413,6 +413,6 @@ describe('app', () => {
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
     // The score goes up or down as guesses are resolved
-    // Scoring is independent across clients
+    // Scoring is independent across players
     // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })

@@ -6,26 +6,26 @@ import Guess from '../app/Guess'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 
-type GuessWithClientId = Guess & {
-    clientId: string
+type GuessWithplayerId = Guess & {
+    playerId: string
 }
 
 export default class InMemoryDatabase implements ForPersisting {
-    private guesses: GuessWithClientId[] = []
+    private guesses: GuessWithplayerId[] = []
 
-    getRecentGuessesOfClient(clientId: string): Promise<Guess[]> {
+    getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
         return Promise.resolve(
             _.cloneDeep(
-                this.guesses.filter((guess) => guess.clientId === clientId)
+                this.guesses.filter((guess) => guess.playerId === playerId)
             )
         )
     }
 
-    insertGuess(clientId: string, guess: GuessInsert): Promise<void> {
+    insertGuess(playerId: string, guess: GuessInsert): Promise<void> {
         this.guesses.push({
             ...guess,
             id: uuidv4(),
-            clientId: clientId,
+            playerId: playerId,
         })
         return Promise.resolve()
     }

@@ -7,9 +7,9 @@ export type ClientInfo = {
 }
 
 export type ForPlacingGuesses = {
-    getClientInfo: (clientId: string) => Promise<ClientInfo>
+    getClientInfo: (playerId: string) => Promise<ClientInfo>
     submitNewGuess: (
-        clientId: string,
+        playerId: string,
         direction: GuessDirection
     ) => Promise<void>
 }

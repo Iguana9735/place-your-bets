@@ -24,22 +24,22 @@ export class App implements ForPlacingGuesses {
         this.forGettingTheTime.listenToTicks(() => this.resolveGuesses())
     }
 
-    async getClientInfo(clientId: string): Promise<ClientInfo> {
+    async getClientInfo(playerId: string): Promise<ClientInfo> {
         return Promise.resolve({
             currentBitcoinPrice:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
             score: 0,
             recentGuesses:
-                await this.forPersisting.getRecentGuessesOfClient(clientId),
+                await this.forPersisting.getRecentGuessesOfClient(playerId),
         })
     }
 
     async submitNewGuess(
-        clientId: string,
+        playerId: string,
         direction: GuessDirection
     ): Promise<void> {
         const pastGuesses =
-            await this.forPersisting.getRecentGuessesOfClient(clientId)
+            await this.forPersisting.getRecentGuessesOfClient(playerId)
         if (pastGuesses.filter((guess) => !guess.result).length > 0) {
             return Promise.reject('Only one guess at a time is allowed')
         }
@@ -50,7 +50,7 @@ export class App implements ForPlacingGuesses {
             submittedAt: this.forGettingTheTime.getTime(),
             direction: direction,
         }
-        await this.forPersisting.insertGuess(clientId, newGuess)
+        await this.forPersisting.insertGuess(playerId, newGuess)
     }
 
     private async resolveGuesses() {
