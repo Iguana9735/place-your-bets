@@ -46,6 +46,7 @@ export class App implements ForPlacingGuesses {
     private async resolveGuesses() {
         const allGuesses = await this.forPersisting.getAllGuesses()
         const now = this.forGettingTheTime.getTime()
+        const currentPrice = await this.forGettingBitcoinPrice.getBitcoinPrice()
         await Promise.all(
             allGuesses
                 .filter((guess) => {
@@ -54,6 +55,7 @@ export class App implements ForPlacingGuesses {
                     )
                     return notBefore < now
                 })
+                .filter((guess) => guess.priceAtSubmission !== currentPrice)
                 .map((guess) => {
                     return this.forPersisting.updateGuess(guess.id, {
                         result: 'CORRECT',

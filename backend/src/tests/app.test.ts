@@ -155,6 +155,7 @@ describe('app', () => {
             await app.submitNewGuess('client-A', 'UP')
 
             // When
+            fakeBitcoinPriceSource.setPrice(101)
             fakeClock.advanceSeconds(80)
             await fakeClock.tick()
 
@@ -172,7 +173,25 @@ describe('app', () => {
             await app.submitNewGuess('client-A', 'UP')
 
             // When
+            fakeBitcoinPriceSource.setPrice(101)
             fakeClock.advanceSeconds(50)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses).toHaveLength(1)
+            expect(clientInfo.recentGuesses[0].result).toBeUndefined()
+        })
+
+        it('does not resolve a guess if the price has not changed', async () => {
+            // Given
+            const initialTime = new Date('2020-01-01T00:00:00Z')
+            fakeClock.setTime(initialTime)
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            // When
+            fakeClock.advanceSeconds(80)
             await fakeClock.tick()
 
             // Then
