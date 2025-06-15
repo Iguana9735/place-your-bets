@@ -28,6 +28,7 @@ export class App implements ForPlacingGuesses {
         return Promise.resolve({
             currentBitcoinPrice:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),
+            score: 0,
             recentGuesses:
                 await this.forPersisting.getRecentGuessesOfClient(clientId),
         })

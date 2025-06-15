@@ -399,6 +399,13 @@ describe('app', () => {
         })
     })
 
+    describe('scoring', () => {
+        it('initial score is 0', async () => {
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.score).toBe(0)
+        })
+    })
+
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
@@ -406,5 +413,6 @@ describe('app', () => {
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
     // The score goes up or down as guesses are resolved
+    // Scoring is independent across clients
     // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })
