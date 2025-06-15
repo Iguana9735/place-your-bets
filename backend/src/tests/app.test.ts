@@ -167,10 +167,8 @@ describe('app', () => {
 
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Returns the guess when asked
     // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
-    // Resolves a guess after 60 seconds if the price has changed
     // Does not resolve a guess before 60 seconds, even if the price has changed
     // Resolves a guess when the price changes if the price hasn't changed after 60 seconds
     // If after 60 seconds, the price has changed but has also returned to the original price,
