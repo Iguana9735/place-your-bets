@@ -308,6 +308,66 @@ describe('app', () => {
         })
     })
 
+    describe('guess result', () => {
+        it('is correct if the user guessed up and the price went up', async () => {
+            // Given
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            // When
+            fakeBitcoinPriceSource.setPrice(101)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toEqual('CORRECT')
+        })
+
+        it('is correct if the user guessed down and the price went down', async () => {
+            // Given
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'DOWN')
+
+            // When
+            fakeBitcoinPriceSource.setPrice(99)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toEqual('CORRECT')
+        })
+        it('is incorrect if the user guessed up and the price went down', async () => {
+            // Given
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            // When
+            fakeBitcoinPriceSource.setPrice(99)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toEqual('INCORRECT')
+        })
+        it('is incorrect if the user guessed down and the price went up', async () => {
+            // Given
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'DOWN')
+
+            // When
+            fakeBitcoinPriceSource.setPrice(101)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then
+            const clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toEqual('INCORRECT')
+        })
+    })
+
     describe('simultaneous guesses', () => {
         it('does not accept a guess if there is a current guess unresolved for that client', async () => {
             // Given
@@ -343,7 +403,6 @@ describe('app', () => {
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
-    // Resolved guesses are resolved as either "CORRECT" or "INCORRECT"
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
     // The score goes up or down as guesses are resolved

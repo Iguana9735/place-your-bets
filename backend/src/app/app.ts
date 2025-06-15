@@ -67,10 +67,17 @@ export class App implements ForPlacingGuesses {
                 })
                 .filter((guess) => guess.priceAtSubmission !== currentPrice)
                 .map((guess) => {
+                    const actualPriceDirection =
+                        currentPrice > guess.priceAtSubmission ? 'UP' : 'DOWN'
+                    const result =
+                        guess.direction === actualPriceDirection
+                            ? 'CORRECT'
+                            : 'INCORRECT'
+
                     return this.forPersisting.updateGuess(guess.id, {
                         resolvedAt: now,
                         priceAtResolution: currentPrice,
-                        result: 'CORRECT',
+                        result: result,
                     })
                 })
         )
