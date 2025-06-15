@@ -162,7 +162,7 @@ describe('app', () => {
             // Then
             const clientInfo = await app.getClientInfo('client-A')
             expect(clientInfo.recentGuesses).toHaveLength(1)
-            expect(clientInfo.recentGuesses[0].result).toBeDefined()
+            expect(clientInfo.recentGuesses[0].result).toBe('CORRECT')
         })
 
         it('does not resolve a guess before 60 seconds, even if the price has changed', async () => {
@@ -199,16 +199,65 @@ describe('app', () => {
             expect(clientInfo.recentGuesses).toHaveLength(1)
             expect(clientInfo.recentGuesses[0].result).toBeUndefined()
         })
+
+        it('extended scenario', async () => {
+            const initialTime = new Date('2020-01-01T00:00:00Z')
+            fakeClock.setTime(initialTime)
+            fakeBitcoinPriceSource.setPrice(100)
+            await app.submitNewGuess('client-A', 'UP')
+
+            let clientInfo
+
+            // 10 pass (+10)...
+            fakeClock.advanceSeconds(10)
+            await fakeClock.tick()
+
+            // ... nothing happens
+            clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toBeUndefined()
+
+            // 10 seconds pass (+20), price goes down
+            fakeBitcoinPriceSource.setPrice(99)
+            fakeClock.advanceSeconds(10)
+            await fakeClock.tick()
+
+            // ... nothing happens
+            clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toBeUndefined()
+
+            // 10 seconds pass (+30), price returns to the original value
+            fakeBitcoinPriceSource.setPrice(100)
+            fakeClock.advanceSeconds(10)
+            await fakeClock.tick()
+
+            // ... nothing happens
+            clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toBeUndefined()
+
+            // Several minutes pass without the price changing...
+            fakeClock.advanceSeconds(1000)
+            await fakeClock.tick()
+
+            // ... nothing happens
+            clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toBeUndefined()
+
+            // Price goes up...
+            fakeBitcoinPriceSource.setPrice(101)
+            fakeClock.advanceSeconds(1)
+            await fakeClock.tick()
+
+            // ... guess is resolved
+            clientInfo = await app.getClientInfo('client-A')
+            expect(clientInfo.recentGuesses[0].result).toBe('CORRECT')
+        })
     })
 
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
     // Does not accept a guess if there is a current open guess for that client
     // Accepts a guess if there are other guesses but they are closed
-    // Resolves a guess when the price changes if the price hasn't changed after 60 seconds
-    // If after 60 seconds, the price has changed but has also returned to the original price,
-    //  then it is considered to not have changed, i.e. the guess doesn't resolve until the price changes again
-    // Guesses that are already resolved are resolved again
+    // Guesses that are already resolved are not resolved again
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
     // Resolved guesses have the time at which the guess was resolved
