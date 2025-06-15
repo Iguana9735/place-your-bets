@@ -12,6 +12,7 @@ type GuessWithplayerId = Guess & {
 
 export default class InMemoryDatabase implements ForPersisting {
     private guesses: GuessWithplayerId[] = []
+    private scores: Record<string, number> = {}
 
     getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
         return Promise.resolve(
@@ -40,5 +41,14 @@ export default class InMemoryDatabase implements ForPersisting {
 
     getAllGuesses(): Promise<Guess[]> {
         return Promise.resolve(_.cloneDeep(this.guesses))
+    }
+
+    getScore(playerId: string): Promise<number | undefined> {
+        return Promise.resolve(this.scores[playerId])
+    }
+
+    setScore(playerId: string, score: number): Promise<void> {
+        this.scores[playerId] = score
+        return Promise.resolve()
     }
 }

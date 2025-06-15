@@ -13,6 +13,9 @@ type ForPersisting = {
     updateGuess(guessId: string, update: GuessUpdate): Promise<void>
     getRecentGuessesOfClient(playerId: string): Promise<Guess[]>
     getAllGuesses(): Promise<Guess[]>
+
+    getScore(playerId: string): Promise<number | undefined>
+    setScore(playerId: string, score: number): Promise<void>
 }
 
 export default ForPersisting

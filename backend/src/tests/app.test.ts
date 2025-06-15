@@ -400,9 +400,38 @@ describe('app', () => {
     })
 
     describe('scoring', () => {
+        const makeGuess = async (
+            clientId: string,
+            guessedDirection: 'UP' | 'DOWN',
+            priceDelta: number
+        ) => {
+            await app.submitNewGuess(clientId, guessedDirection)
+            fakeBitcoinPriceSource.setPrice(
+                (await fakeBitcoinPriceSource.getBitcoinPrice()) + priceDelta
+            )
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+        }
+
         it('initial score is 0', async () => {
             const clientInfo = await app.getClientInfo('player-A')
             expect(clientInfo.score).toBe(0)
+        })
+
+        it.skip('score goes up when good guesses are made', async () => {
+            // When
+            makeGuess('player-A', 'UP', 1)
+
+            // Then
+            let clientInfo = await app.getClientInfo('player-A')
+            expect(clientInfo.score).toBe(1)
+
+            // When
+            makeGuess('player-A', 'DOWN', -1)
+
+            // Then
+            clientInfo = await app.getClientInfo('player-A')
+            expect(clientInfo.score).toBe(2)
         })
     })
 
@@ -413,6 +442,6 @@ describe('app', () => {
     // List of guesses returns only the 5 most recent guesses
     // Players start with a score of 0
     // The score goes up or down as guesses are resolved
-    // Scoring is independent across players
+    // Scoring is independent across clients
     // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })
