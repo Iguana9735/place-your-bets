@@ -309,7 +309,7 @@ describe('app', () => {
     })
 
     describe('simultaneous guesses', () => {
-        it('does not accept a guess if there is a current guess open for that client', async () => {
+        it('does not accept a guess if there is a current guess unresolved for that client', async () => {
             // Given
             await app.submitNewGuess('client-A', 'UP')
 
@@ -319,18 +319,28 @@ describe('app', () => {
             ).rejects.toBeDefined()
         })
 
-        it('accepts a guess even if a different client already has an open guess', async () => {
+        it('accepts a guess even if a different client already has an unresolved guess', async () => {
             // Given
             await app.submitNewGuess('client-A', 'UP')
 
             // Then (doesn't throw)
             await app.submitNewGuess('client-B', 'UP')
         })
+
+        it('accepts a guess even if a the client has past guesses, as long as they have resolved already', async () => {
+            // Given
+            await app.submitNewGuess('client-A', 'UP')
+            fakeBitcoinPriceSource.setPrice(123)
+            fakeClock.advanceSeconds(80)
+            await fakeClock.tick()
+
+            // Then (doesn't throw)
+            await app.submitNewGuess('client-A', 'UP')
+        })
     })
 
     // TODO
     // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Accepts a guess if there are other guesses but they are closed
     // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
     //  the prices as integers
     // Resolved guesses are resolved as either "CORRECT" or "INCORRECT"

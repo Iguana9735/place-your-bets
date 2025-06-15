@@ -39,7 +39,7 @@ export class App implements ForPlacingGuesses {
     ): Promise<void> {
         const pastGuesses =
             await this.forPersisting.getRecentGuessesOfClient(clientId)
-        if (pastGuesses.length > 0) {
+        if (pastGuesses.filter((guess) => !guess.result).length > 0) {
             return Promise.reject('Only one guess at a time is allowed')
         }
 
