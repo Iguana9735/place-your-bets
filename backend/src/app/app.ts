@@ -33,7 +33,10 @@ export class App implements ForPlacingGuesses {
         })
     }
 
-    async submitNewGuess(clientId: string, direction: GuessDirection) {
+    async submitNewGuess(
+        clientId: string,
+        direction: GuessDirection
+    ): Promise<void> {
         const newGuess: GuessInsert = {
             priceAtSubmission:
                 await this.forGettingBitcoinPrice.getBitcoinPrice(),

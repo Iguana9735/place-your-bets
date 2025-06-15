@@ -7,5 +7,8 @@ export type ClientInfo = {
 
 export type ForPlacingGuesses = {
     getClientInfo: (clientId: string) => Promise<ClientInfo>
-    submitNewGuess: (clientId: string, direction: GuessDirection) => void
+    submitNewGuess: (
+        clientId: string,
+        direction: GuessDirection
+    ) => Promise<void>
 }
