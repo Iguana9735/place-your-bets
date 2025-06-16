@@ -73,7 +73,10 @@ export interface operations {
     getInfo: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description Contains the player ID. Not real authentication! */
+                Authorization: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -87,7 +90,18 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @description The current Bitcoin price, or null if unavailable */
-                        bitcoinPrice?: number | null;
+                        bitcoinPrice: number | null;
+                        recentGuesses: {
+                            priceAtSubmission: number;
+                            submittedAt: number;
+                            /** @enum {string} */
+                            direction: "UP" | "DOWN";
+                            priceAtResolution?: number;
+                            resolvedAt?: number;
+                            /** @enum {string} */
+                            result?: "CORRECT" | "INCORRECT";
+                        }[];
+                        score: number;
                     };
                 };
             };

@@ -22,6 +22,13 @@ paths:
     get:
       summary: Get all the info the frontend needs in one call
       operationId: getInfo
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: Contains the player ID. Not real authentication!
       responses:
         '200':
           description: Success
@@ -34,3 +41,36 @@ paths:
                     type: number
                     nullable: true
                     description: The current Bitcoin price, or null if unavailable
+                  recentGuesses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        priceAtSubmission:
+                          type: number
+                        submittedAt:
+                          type: number
+                        direction:
+                          type: string
+                          enum:
+                            - "UP"
+                            - "DOWN"
+                        priceAtResolution:
+                          type: number
+                        resolvedAt:
+                          type: number
+                        result:
+                          type: string
+                          enum:
+                            - "CORRECT"
+                            - "INCORRECT"
+                      required:
+                        - priceAtSubmission
+                        - submittedAt
+                        - direction
+                  score:
+                    type: number
+                required:
+                  - bitcoinPrice
+                  - recentGuesses
+                  - score

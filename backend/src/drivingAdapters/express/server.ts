@@ -21,8 +21,24 @@ export function startServer(forPlacingBets: ForPlacingGuesses) {
     expressServer.get(
         '/info',
         async (req: Request, res: Response<InfoResponse>) => {
-            const clientInfo = await forPlacingBets.getClientInfo('todo')
-            res.json({ bitcoinPrice: clientInfo.currentBitcoinPrice })
+            const playerId = req.header('Authorization')
+            if (!playerId) {
+                res.status(401).json(undefined)
+                return
+            }
+            const clientInfo = await forPlacingBets.getClientInfo(playerId)
+            res.json({
+                bitcoinPrice: clientInfo.currentBitcoinPrice,
+                recentGuesses: clientInfo.recentGuesses.map((guess) => ({
+                    direction: guess.direction,
+                    submittedAt: guess.submittedAt.getTime(),
+                    priceAtSubmission: guess.priceAtSubmission,
+                    resolvedAt: guess.resolvedAt?.getTime(),
+                    priceAtResolution: guess.priceAtResolution,
+                    result: guess.result,
+                })),
+                score: clientInfo.score,
+            })
         }
     )
 
