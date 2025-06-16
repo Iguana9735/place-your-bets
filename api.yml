@@ -74,3 +74,31 @@ paths:
                   - bitcoinPrice
                   - recentGuesses
                   - score
+  /submit-guess:
+    post:
+      summary: Submit a guess
+      operationId: submitGuess
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: Contains the player ID. Not real authentication!
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                direction:
+                  type: string
+                  enum:
+                    - "UP"
+                    - "DOWN"
+              required:
+                - direction
+      responses:
+        '201':
+          description: Success
