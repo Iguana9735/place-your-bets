@@ -3,13 +3,13 @@ import { App } from './app/app'
 import { ForGettingBitcoinPrice } from './drivenPorts/ForGettingBitcoinPrice'
 import FakeBitcoinPriceSource from './drivenAdapters/FakeBitcoinPriceSource'
 import { ForGettingTheTime } from './drivenPorts/ForGettingTheTime'
-import FakeClock from './drivenAdapters/forGettingTheTime/FakeClock'
 import InMemoryDatabase from './drivenAdapters/InMemoryDatabase'
 import ForPersisting from './drivenPorts/ForPersisting'
+import RealClock from './drivenAdapters/forGettingTheTime/RealClock'
 
 const forGettingBitcoinPrice: ForGettingBitcoinPrice =
     new FakeBitcoinPriceSource()
-const forGettingTheTime: ForGettingTheTime = new FakeClock()
+const forGettingTheTime: ForGettingTheTime = new RealClock()
 const forPersisting: ForPersisting = new InMemoryDatabase()
 
 const app = new App(forGettingBitcoinPrice, forGettingTheTime, forPersisting)
