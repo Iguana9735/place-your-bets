@@ -3,7 +3,7 @@ import { App } from './app/app'
 import { ForGettingBitcoinPrice } from './drivenPorts/ForGettingBitcoinPrice'
 import FakeBitcoinPriceSource from './drivenAdapters/FakeBitcoinPriceSource'
 import { ForGettingTheTime } from './drivenPorts/ForGettingTheTime'
-import FakeClock from './drivenAdapters/FakeClock'
+import FakeClock from './drivenAdapters/forGettingTheTime/FakeClock'
 import InMemoryDatabase from './drivenAdapters/InMemoryDatabase'
 import ForPersisting from './drivenPorts/ForPersisting'
 

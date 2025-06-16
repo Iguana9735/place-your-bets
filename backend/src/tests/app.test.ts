@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from '@jest/globals'
 import { App } from '../app/app'
 import FakeBitcoinPriceSource from '../drivenAdapters/FakeBitcoinPriceSource'
-import FakeClock from '../drivenAdapters/FakeClock'
+import FakeClock from '../drivenAdapters/forGettingTheTime/FakeClock'
 import InMemoryDatabase from '../drivenAdapters/InMemoryDatabase'
 
 describe('app', () => {

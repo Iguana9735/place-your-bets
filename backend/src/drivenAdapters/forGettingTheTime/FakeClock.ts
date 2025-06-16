@@ -1,4 +1,4 @@
-import { ForGettingTheTime } from '../drivenPorts/ForGettingTheTime'
+import { ForGettingTheTime } from '../../drivenPorts/ForGettingTheTime'
 
 export default class FakeClock implements ForGettingTheTime {
     private time: Date = new Date(0)
