@@ -1,6 +1,8 @@
-import { ForGettingBitcoinPrice } from '../drivenPorts/ForGettingBitcoinPrice'
+import { ForGettingBitcoinPrice } from '../../drivenPorts/ForGettingBitcoinPrice'
 
-export default class FakeBitcoinPriceSource implements ForGettingBitcoinPrice {
+export default class SettableBitcoinPriceSource
+    implements ForGettingBitcoinPrice
+{
     currentPrice: number = 0
 
     getBitcoinPrice(): Promise<number> {

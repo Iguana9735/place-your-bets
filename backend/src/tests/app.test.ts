@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it } from '@jest/globals'
 import { App } from '../app/app'
-import FakeBitcoinPriceSource from '../drivenAdapters/FakeBitcoinPriceSource'
+import SettableBitcoinPriceSource from '../drivenAdapters/forGettingBitcoinPrice/SettableBitcoinPriceSource'
 import FakeClock from '../drivenAdapters/forGettingTheTime/FakeClock'
 import InMemoryDatabase from '../drivenAdapters/InMemoryDatabase'
 
 describe('app', () => {
     let app: App
-    let fakeBitcoinPriceSource: FakeBitcoinPriceSource
+    let fakeBitcoinPriceSource: SettableBitcoinPriceSource
     let fakeClock: FakeClock
 
     beforeEach(() => {
-        fakeBitcoinPriceSource = new FakeBitcoinPriceSource()
+        fakeBitcoinPriceSource = new SettableBitcoinPriceSource()
         fakeClock = new FakeClock()
         app = new App(fakeBitcoinPriceSource, fakeClock, new InMemoryDatabase())
     })
