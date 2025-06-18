@@ -1,9 +1,13 @@
 import express, { Request, Response } from 'express'
 import type { paths } from './generated/api'
+import cors from 'cors'
 import { ForPlacingGuesses } from '../../drivingPorts/ForPlacingGuesses'
 
 const expressServer = express()
 expressServer.use(express.json())
+
+// FIXME restrict allowed origins
+expressServer.use(cors())
 
 const PORT = process.env.PORT || 3000
 
