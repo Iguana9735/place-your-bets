@@ -1,0 +1,9 @@
+.openapi-generator-ignore
+apis/DefaultApi.ts
+apis/index.ts
+index.ts
+models/GetInfo200Response.ts
+models/GetInfo200ResponseRecentGuessesInner.ts
+models/SubmitGuessRequest.ts
+models/index.ts
+runtime.ts
