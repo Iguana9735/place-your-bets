@@ -3,7 +3,6 @@ import PriceDisplay from './PriceDisplay.tsx'
 import ScoreDisplay from './ScoreDisplay.tsx'
 import GuessList from './GuessList.tsx'
 import { Button, ButtonGroup, Grid, Stack } from '@mui/material'
-import { useEffect } from 'react'
 
 type Props = {
     clientInfo: ClientInfo
@@ -11,12 +10,6 @@ type Props = {
 }
 
 const MainContent = ({ clientInfo, onSubmitGuess }: Props) => {
-
-    useEffect(() => {
-        console.log('Mounting mainContent')
-    }, [])
-
-
     return <Grid container spacing={2}>
         <Grid size={8}>
             <Stack spacing={2}>
