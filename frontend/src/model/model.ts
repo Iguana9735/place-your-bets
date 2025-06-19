@@ -1,13 +1,18 @@
 type Guess = {
-    id: string,
-    submittedAt: UnixSeconds,
+    submittedAt: UnixMillis,
     priceAtSubmission: number,
-    direction: "UP" | "DOWN",
-    resolvedAt?: UnixSeconds,
+    direction: 'UP' | 'DOWN',
+    resolvedAt?: UnixMillis,
     priceAtResolution?: number,
-    result?: "CORRECT" | "INCORRECT"
+    result?: 'CORRECT' | 'INCORRECT'
 }
 
-type UnixSeconds = number
+type UnixMillis = number
 
-export type {Guess, UnixSeconds}
+type ClientInfo = {
+    score: number,
+    bitcoinPrice: number,
+    recentGuesses: Guess[]
+}
+
+export type { Guess, UnixMillis , ClientInfo}

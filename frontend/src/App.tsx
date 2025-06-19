@@ -1,15 +1,12 @@
-import { Box, Button, ButtonGroup, CircularProgress, Container, Grid, Stack, styled } from '@mui/material'
-import PriceDisplay from './components/PriceDisplay.tsx'
-import ScoreDisplay from './components/ScoreDisplay.tsx'
-import GuessList from './components/GuessList.tsx'
+import { Box, CircularProgress, Container, Stack, styled } from '@mui/material'
 import { useEffect, useState } from 'react'
 import * as ApiClient from './api-client/client.ts'
-import { submitNewGuess } from './api-client/client.ts'
-import type { GetInfo200Response } from './api-client/gen'
+import MainContent from './components/MainContent.tsx'
+import type { ClientInfo } from './model/model.ts'
 
 function App() {
 
-    const [clientInfo, setClientInfo] = useState<GetInfo200Response | undefined>(undefined)
+    const [clientInfo, setClientInfo] = useState<ClientInfo | undefined>(undefined)
 
     const fetchClientInfo = () => {
         ApiClient.fetchClientInfo().then((clientInfo) => {
@@ -29,6 +26,30 @@ function App() {
             .then(fetchClientInfo)
     }
 
+    const ContentArea = ({ clientInfo }: { clientInfo: ClientInfo | undefined }) => {
+        if (!clientInfo) {
+            return <LoadingIndicator />
+        }
+        return <MainContent clientInfo={clientInfo} onSubmitGuess={submitNewGuess} />
+    }
+
+    const LoadingIndicator = () => {
+        return <Box display={'flex'} justifyContent={'center'}>
+            <CircularProgress />
+        </Box>
+
+    }
+
+
+    const SiteContainer = styled(Container)(({ theme }) => ({
+        marginTop: theme.spacing(5),
+    }))
+
+    const Title = styled('div')(({ theme }) => ({
+        ...theme.typography.h5,
+        color: theme.palette.text.primary,
+    }))
+
     return (
         <>
             <SiteContainer maxWidth={'md'}>
@@ -40,54 +61,5 @@ function App() {
         </>
     )
 }
-
-const ContentArea = ({ clientInfo }: { clientInfo: GetInfo200Response | undefined }) => {
-    if (!clientInfo) {
-        return <LoadingIndicator />
-    }
-    return <MainContent clientInfo={clientInfo} />
-}
-
-const LoadingIndicator = () => {
-    return <Box display={'flex'} justifyContent={'center'}>
-        <CircularProgress />
-    </Box>
-
-}
-
-const MainContent = ({ clientInfo }: { clientInfo: GetInfo200Response }) => {
-    return <Grid container spacing={2}>
-        <Grid size={8}>
-            <Stack spacing={2}>
-                <GuessButtons onClick={(direction => submitNewGuess(direction))} />
-                <GuessList />
-            </Stack>
-        </Grid>
-        <Grid size={4}>
-            <Stack spacing={2}>
-                <ScoreDisplay score={clientInfo.score} />
-                <PriceDisplay price={clientInfo.bitcoinPrice} />
-            </Stack>
-        </Grid>
-    </Grid>
-}
-
-const GuessButtons = ({ onClick }: { onClick: (direction: 'UP' | 'DOWN') => void }) => {
-    return (
-        <ButtonGroup orientation='vertical' aria-label='Vertical button group'>
-            <Button onClick={() => onClick('UP')}>Up</Button>,
-            <Button onClick={() => onClick('DOWN')}>Down</Button>,
-        </ButtonGroup>
-    )
-}
-
-const SiteContainer = styled(Container)(({ theme }) => ({
-    marginTop: theme.spacing(5),
-}))
-
-const Title = styled('div')(({ theme }) => ({
-    ...theme.typography.h5,
-    color: theme.palette.text.primary,
-}))
 
 export default App

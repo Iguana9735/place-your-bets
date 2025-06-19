@@ -1,5 +1,5 @@
 import {Paper, styled} from "@mui/material";
-import type {Guess, UnixSeconds} from "../model/model.ts";
+import type {Guess, UnixMillis} from "../model/model.ts";
 import {formatInstant, formatMoney} from "../utils/formatters.ts";
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -34,7 +34,7 @@ function makeFirstLine(guess: Guess): string {
     return `You guessed ${guess.direction}...`
 }
 
-function PriceSnapshot({price, time}: { price?: number, time?: UnixSeconds }) {
+function PriceSnapshot({price, time}: { price?: number, time?: UnixMillis }) {
     return <>
         <div><b>{price ? formatMoney(price) : ""}</b></div>
         <div>{time ? formatInstant(time) : ""}</div>
