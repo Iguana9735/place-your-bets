@@ -1,10 +1,18 @@
 import { recreateTable } from './tableCommands.ts'
 
 const tableDefinitions = [{
+    TableName: 'place-your-bets-scores',
+    KeySchema: [
+        { AttributeName: 'playerId', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+        { AttributeName: 'playerId', AttributeType: 'S' },
+    ],
+    BillingMode: 'PAY_PER_REQUEST',
+}, {
     TableName: 'place-your-bets-guesses',
     KeySchema: [
         { AttributeName: 'id', KeyType: 'HASH' },
-
     ],
     GlobalSecondaryIndexes: [{
         IndexName: 'playerId-submittedAt',
