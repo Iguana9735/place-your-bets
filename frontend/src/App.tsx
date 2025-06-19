@@ -18,7 +18,14 @@ function App() {
     }
 
     useEffect(() => {
+
         fetchClientInfo()
+
+        const interval = setInterval(() => {
+            fetchClientInfo()
+        }, 2000)
+
+        return () => clearInterval(interval)
     }, [])
 
     const submitNewGuess = (direction: 'UP' | 'DOWN') => {
