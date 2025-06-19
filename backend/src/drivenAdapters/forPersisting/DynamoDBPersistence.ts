@@ -2,18 +2,25 @@ import ForPersisting, {
     GuessInsert,
     GuessUpdate,
 } from '../../drivenPorts/ForPersisting'
-import Guess from '../../app/Guess'
+import Guess, { GuessDirection, GuessResult } from '../../app/Guess'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
 
-type GuessWithplayerId = Guess & {
+type PersistedGuess = {
+    id: string
     playerId: string
+    priceAtSubmission: number
+    submittedAt: number
+    direction: GuessDirection
+    resolvedAt?: number
+    priceAtResolution?: number
+    result?: GuessResult
 }
 
 export default class DynamoDBPersistence implements ForPersisting {
-    private guesses: GuessWithplayerId[] = []
+    private guesses: Guess[] = []
     private scores: Record<string, number> = {}
 
     client = new DynamoDBClient({})
@@ -26,15 +33,21 @@ export default class DynamoDBPersistence implements ForPersisting {
     }
 
     async insertGuess(guessInsert: GuessInsert): Promise<void> {
-        const guess: GuessWithplayerId = {
+        const guess: Guess = {
             ...guessInsert,
             id: uuidv4(),
         }
         this.guesses.push(guess)
 
+        const persistedGuess: PersistedGuess = {
+            ...guess,
+            submittedAt: guessInsert.submittedAt.getTime(),
+            resolvedAt: guessInsert.resolvedAt?.getTime(),
+        }
+
         const command = new PutCommand({
             TableName: 'place-your-bets-guesses',
-            Item: guess,
+            Item: persistedGuess,
         })
         await this.docClient.send(command)
     }
