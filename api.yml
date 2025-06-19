@@ -39,8 +39,6 @@ paths:
                 properties:
                   bitcoinPrice:
                     type: number
-                    nullable: true
-                    description: The current Bitcoin price, or null if unavailable
                   recentGuesses:
                     type: array
                     items:

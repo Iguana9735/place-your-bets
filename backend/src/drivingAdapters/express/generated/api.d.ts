@@ -106,8 +106,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        /** @description The current Bitcoin price, or null if unavailable */
-                        bitcoinPrice: number | null;
+                        bitcoinPrice: number;
                         recentGuesses: {
                             priceAtSubmission: number;
                             submittedAt: number;

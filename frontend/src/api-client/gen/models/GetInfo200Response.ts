@@ -12,14 +12,11 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { GetInfo200ResponseRecentGuessesInner } from './GetInfo200ResponseRecentGuessesInner';
+import type { GetInfo200ResponseRecentGuessesInner } from './GetInfo200ResponseRecentGuessesInner'
 import {
     GetInfo200ResponseRecentGuessesInnerFromJSON,
-    GetInfo200ResponseRecentGuessesInnerFromJSONTyped,
     GetInfo200ResponseRecentGuessesInnerToJSON,
-    GetInfo200ResponseRecentGuessesInnerToJSONTyped,
-} from './GetInfo200ResponseRecentGuessesInner';
+} from './GetInfo200ResponseRecentGuessesInner'
 
 /**
  * 
@@ -28,11 +25,11 @@ import {
  */
 export interface GetInfo200Response {
     /**
-     * The current Bitcoin price, or null if unavailable
+     * 
      * @type {number}
      * @memberof GetInfo200Response
      */
-    bitcoinPrice: number | null;
+    bitcoinPrice: number;
     /**
      * 
      * @type {Array<GetInfo200ResponseRecentGuessesInner>}
