@@ -33,40 +33,33 @@ function App() {
             .then(fetchClientInfo)
     }
 
-    const ContentArea = ({ clientInfo }: { clientInfo: ClientInfo | undefined }) => {
-        if (!clientInfo) {
-            return <LoadingIndicator />
-        }
-        return <MainContent clientInfo={clientInfo} onSubmitGuess={submitNewGuess} />
-    }
-
-    const LoadingIndicator = () => {
-        return <Box display={'flex'} justifyContent={'center'}>
-            <CircularProgress />
-        </Box>
-
-    }
-
-
-    const SiteContainer = styled(Container)(({ theme }) => ({
-        marginTop: theme.spacing(5),
-    }))
-
-    const Title = styled('div')(({ theme }) => ({
-        ...theme.typography.h5,
-        color: theme.palette.text.primary,
-    }))
-
     return (
         <>
             <SiteContainer maxWidth={'md'}>
                 <Stack spacing={2}>
                     <Title> Is Bitcoin going up or down? Take a guess! </Title>
-                    <ContentArea clientInfo={clientInfo} />
+                    {clientInfo ?
+                        <MainContent clientInfo={clientInfo} onSubmitGuess={submitNewGuess} /> :
+                        <LoadingIndicator />}
                 </Stack>
             </SiteContainer>
         </>
     )
 }
+
+const LoadingIndicator = () => {
+    return <Box display={'flex'} justifyContent={'center'}>
+        <CircularProgress />
+    </Box>
+}
+
+const SiteContainer = styled(Container)(({ theme }) => ({
+    marginTop: theme.spacing(5),
+}))
+
+const Title = styled('div')(({ theme }) => ({
+    ...theme.typography.h5,
+    color: theme.palette.text.primary,
+}))
 
 export default App
