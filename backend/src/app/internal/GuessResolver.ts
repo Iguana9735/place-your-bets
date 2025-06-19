@@ -21,9 +21,10 @@ export class GuessResolver {
     }
 
     async resolveGuesses() {
-        const allGuesses = await this.forPersisting.getAllGuesses()
+        const unresolvedGuesses =
+            await this.forPersisting.getUnresolvedGuesses()
 
-        for (const guess of allGuesses) {
+        for (const guess of unresolvedGuesses) {
             await this.resolveAndScore(guess)
         }
     }

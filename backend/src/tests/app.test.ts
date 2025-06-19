@@ -453,5 +453,4 @@ describe('app', () => {
 
     // TODO
     // List of guesses returns only the 5 most recent guesses
-    // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })

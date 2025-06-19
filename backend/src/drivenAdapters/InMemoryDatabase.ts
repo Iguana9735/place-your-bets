@@ -38,8 +38,9 @@ export default class InMemoryDatabase implements ForPersisting {
         return Promise.resolve()
     }
 
-    getAllGuesses(): Promise<Guess[]> {
-        return Promise.resolve(_.cloneDeep(this.guesses))
+    getUnresolvedGuesses(): Promise<Guess[]> {
+        const unresolvedGuesses = this.guesses.filter((guess) => !guess.result)
+        return Promise.resolve(_.cloneDeep(unresolvedGuesses))
     }
 
     getScore(playerId: string): Promise<number | undefined> {
