@@ -4,6 +4,7 @@ const tableDefinitions = [{
     TableName: 'place-your-bets-guesses',
     KeySchema: [
         { AttributeName: 'id', KeyType: 'HASH' },
+
     ],
     GlobalSecondaryIndexes: [{
         IndexName: 'playerId-submittedAt',
@@ -20,11 +21,23 @@ const tableDefinitions = [{
         Projection: {
             ProjectionType: 'ALL',
         },
+    }, {
+        IndexName: 'result',
+        KeySchema: [
+            {
+                AttributeName: 'result',
+                KeyType: 'HASH',
+            },
+        ],
+        Projection: {
+            ProjectionType: 'ALL',
+        },
     }],
     AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
         { AttributeName: 'playerId', AttributeType: 'S' },
         { AttributeName: 'submittedAt', AttributeType: 'N' },
+        { AttributeName: 'result', AttributeType: 'S' },
     ],
     BillingMode: 'PAY_PER_REQUEST',
 }]
