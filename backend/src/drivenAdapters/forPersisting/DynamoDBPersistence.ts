@@ -3,11 +3,11 @@ import ForPersisting, {
     GuessUpdate,
 } from '../../drivenPorts/ForPersisting'
 import Guess, { GuessDirection, GuessResult } from '../../app/Guess'
-import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import {
     DynamoDBDocumentClient,
+    NativeAttributeValue,
     PutCommand,
     QueryCommand,
     UpdateCommand,
@@ -21,7 +21,7 @@ type PersistedGuess = {
     direction: GuessDirection
     resolvedAt?: number
     priceAtResolution?: number
-    result?: GuessResult
+    result: 'CORRECT' | 'INCORRECT' | 'UNRESOLVED'
 }
 
 const GUESS_TABLE_NAME = 'place-your-bets-guesses'
@@ -34,33 +34,20 @@ export default class DynamoDBPersistence implements ForPersisting {
     docClient = DynamoDBDocumentClient.from(this.client)
 
     async getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
-        const command = new QueryCommand({
-            TableName: GUESS_TABLE_NAME,
-            IndexName: 'playerId-submittedAt',
-            KeyConditionExpression: '#playerId = :playerIdValue',
-            ExpressionAttributeNames: {
-                '#playerId': 'playerId',
-            },
-            ExpressionAttributeValues: {
-                ':playerIdValue': playerId,
-            },
-            ScanIndexForward: false,
-            Limit: 5,
-        })
-
-        const output = await this.docClient.send(command)
-
-        return (
-            output.Items?.map((item) => ({
-                id: item.id as string,
-                playerId: item.playerId as string,
-                submittedAt: new Date(item.submittedAt as number),
-                priceAtSubmission: item.priceAtSubmission as number,
-                direction: item.direction as GuessDirection,
-                resolvedAt: new Date(item.submittedAt as number),
-                priceAtResolution: item.priceAtResolution as number,
-                result: item.result as GuessResult,
-            })) || []
+        return this.queryGuesses(
+            new QueryCommand({
+                TableName: GUESS_TABLE_NAME,
+                IndexName: 'playerId-submittedAt',
+                KeyConditionExpression: '#playerId = :playerIdValue',
+                ExpressionAttributeNames: {
+                    '#playerId': 'playerId',
+                },
+                ExpressionAttributeValues: {
+                    ':playerIdValue': playerId,
+                },
+                ScanIndexForward: false,
+                Limit: 5,
+            })
         )
     }
 
@@ -110,8 +97,24 @@ export default class DynamoDBPersistence implements ForPersisting {
     }
 
     async getUnresolvedGuesses(): Promise<Guess[]> {
-        const unresolvedGuesses = this.guesses.filter((guess) => !guess.result)
-        return _.cloneDeep(unresolvedGuesses)
+        return this.queryGuesses(
+            new QueryCommand({
+                TableName: GUESS_TABLE_NAME,
+                IndexName: 'result',
+                KeyConditionExpression: '#result = :resultValue',
+                ExpressionAttributeNames: {
+                    '#result': 'result',
+                },
+                ExpressionAttributeValues: {
+                    ':resultValue': 'UNRESOLVED',
+                },
+            })
+        )
+    }
+
+    private async queryGuesses(command: QueryCommand): Promise<Guess[]> {
+        const output = await this.docClient.send(command)
+        return output.Items?.map((item) => this.fromDynamoDbItem(item)) || []
     }
 
     async getScore(playerId: string): Promise<number | undefined> {
@@ -127,6 +130,25 @@ export default class DynamoDBPersistence implements ForPersisting {
             ...guess,
             submittedAt: guess.submittedAt.getTime(),
             resolvedAt: guess.resolvedAt?.getTime(),
+            result: guess.result || 'UNRESOLVED',
+        }
+    }
+
+    private fromDynamoDbItem(
+        item: Record<string, NativeAttributeValue>
+    ): Guess {
+        return {
+            id: item.id as string,
+            playerId: item.playerId as string,
+            submittedAt: new Date(item.submittedAt as number),
+            priceAtSubmission: item.priceAtSubmission as number,
+            direction: item.direction as GuessDirection,
+            resolvedAt: new Date(item.submittedAt as number),
+            priceAtResolution: item.priceAtResolution as number,
+            result:
+                item.result == 'UNRESOLVED'
+                    ? undefined
+                    : (item.result as GuessResult),
         }
     }
 }
