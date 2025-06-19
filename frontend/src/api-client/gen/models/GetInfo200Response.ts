@@ -12,11 +12,14 @@
  * Do not edit the class manually.
  */
 
-import type { GetInfo200ResponseRecentGuessesInner } from './GetInfo200ResponseRecentGuessesInner'
+import { mapValues } from '../runtime';
+import type { GetInfo200ResponseRecentGuessesInner } from './GetInfo200ResponseRecentGuessesInner';
 import {
     GetInfo200ResponseRecentGuessesInnerFromJSON,
+    GetInfo200ResponseRecentGuessesInnerFromJSONTyped,
     GetInfo200ResponseRecentGuessesInnerToJSON,
-} from './GetInfo200ResponseRecentGuessesInner'
+    GetInfo200ResponseRecentGuessesInnerToJSONTyped,
+} from './GetInfo200ResponseRecentGuessesInner';
 
 /**
  * 

@@ -2,6 +2,17 @@
   "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
   "spaces": 2,
   "generator-cli": {
-    "version": "7.13.0"
+    "version": "7.13.0",
+    "generators": {
+      "place-your-bets-api": {
+        "generatorName": "typescript-fetch",
+        "output": "./src/api-client/gen",
+        "inputSpec": "../api.yml",
+        "additionalProperties": {
+          "typescriptThreePlus": true,
+          "supportsES6": true
+        }
+      }
+    }
   }
 }
