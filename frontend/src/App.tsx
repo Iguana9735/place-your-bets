@@ -3,22 +3,31 @@ import PriceDisplay from './components/PriceDisplay.tsx'
 import ScoreDisplay from './components/ScoreDisplay.tsx'
 import GuessList from './components/GuessList.tsx'
 import { useEffect, useState } from 'react'
-import { fetchClientInfo } from './api-client/client.ts'
+import * as ApiClient from './api-client/client.ts'
+import { submitNewGuess } from './api-client/client.ts'
 import type { GetInfo200Response } from './api-client/gen'
 
 function App() {
 
     const [clientInfo, setClientInfo] = useState<GetInfo200Response | undefined>(undefined)
 
-    useEffect(() => {
-        fetchClientInfo().then((clientInfo) => {
+    const fetchClientInfo = () => {
+        ApiClient.fetchClientInfo().then((clientInfo) => {
                 setClientInfo(clientInfo)
             },
             (error) => {
                 console.error(error)
             })
+    }
+
+    useEffect(() => {
+        fetchClientInfo()
     }, [])
 
+    const submitNewGuess = (direction: 'UP' | 'DOWN') => {
+        ApiClient.submitNewGuess(direction)
+            .then(fetchClientInfo)
+    }
 
     return (
         <>
@@ -50,7 +59,7 @@ const MainContent = ({ clientInfo }: { clientInfo: GetInfo200Response }) => {
     return <Grid container spacing={2}>
         <Grid size={8}>
             <Stack spacing={2}>
-                <GuessButtons />
+                <GuessButtons onClick={(direction => submitNewGuess(direction))} />
                 <GuessList />
             </Stack>
         </Grid>
@@ -63,11 +72,11 @@ const MainContent = ({ clientInfo }: { clientInfo: GetInfo200Response }) => {
     </Grid>
 }
 
-const GuessButtons = () => {
+const GuessButtons = ({ onClick }: { onClick: (direction: 'UP' | 'DOWN') => void }) => {
     return (
         <ButtonGroup orientation='vertical' aria-label='Vertical button group'>
-            <Button>Up</Button>,
-            <Button>Down</Button>,
+            <Button onClick={() => onClick('UP')}>Up</Button>,
+            <Button onClick={() => onClick('DOWN')}>Down</Button>,
         </ButtonGroup>
     )
 }
