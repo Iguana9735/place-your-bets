@@ -6,10 +6,10 @@ import InMemoryDatabase from './drivenAdapters/forPersisting/InMemoryDatabase'
 import ForPersisting from './drivenPorts/ForPersisting'
 import RealClock from './drivenAdapters/forGettingTheTime/RealClock'
 import CachingBitcoinPriceSource from './drivenAdapters/forGettingBitcoinPrice/CachingBitcoinPriceSource'
-import BinanceBitcoinPriceSource from './drivenAdapters/forGettingBitcoinPrice/BinanceBitcoinPriceSource'
+import CoinbaseBitcoinPriceSource from './drivenAdapters/forGettingBitcoinPrice/CoinbaseBitcoinPriceSource'
 
 const forGettingBitcoinPrice: ForGettingBitcoinPrice =
-    new CachingBitcoinPriceSource(new BinanceBitcoinPriceSource(), 5000)
+    new CachingBitcoinPriceSource(new CoinbaseBitcoinPriceSource(), 5000)
 const forGettingTheTime: ForGettingTheTime = new RealClock()
 const forPersisting: ForPersisting = new InMemoryDatabase()
 

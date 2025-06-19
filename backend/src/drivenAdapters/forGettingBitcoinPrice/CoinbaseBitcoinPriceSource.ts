@@ -1,23 +1,25 @@
 import { ForGettingBitcoinPrice } from '../../drivenPorts/ForGettingBitcoinPrice'
 
-interface BinancePriceResponse {
-    symbol: string
-    price: string
+interface CoinbasePriceResponse {
+    data: {
+        currency: string
+        rates: Record<string, string>
+    }
 }
 
-export default class BinanceBitcoinPriceSource
+export default class CoinbaseBitcoinPriceSource
     implements ForGettingBitcoinPrice
 {
     async getBitcoinPrice(): Promise<number> {
         const response = await fetch(
-            'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'
+            'https://api.coinbase.com/v2/exchange-rates?currency=BTC'
         )
         if (!response.ok) {
             throw new Error(
                 `Error when fetching bitcoin price: ${response.status} `
             )
         }
-        const data: BinancePriceResponse = await response.json()
-        return parseFloat(data.price)
+        const data: CoinbasePriceResponse = await response.json()
+        return parseFloat(data.data.rates['USD'])
     }
 }
