@@ -1,8 +1,8 @@
 import ForPersisting, {
     GuessInsert,
     GuessUpdate,
-} from '../drivenPorts/ForPersisting'
-import Guess from '../app/Guess'
+} from '../../drivenPorts/ForPersisting'
+import Guess from '../../app/Guess'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 

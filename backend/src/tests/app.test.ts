@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from '@jest/globals'
 import { App } from '../app/app'
 import SettableBitcoinPriceSource from '../drivenAdapters/forGettingBitcoinPrice/SettableBitcoinPriceSource'
 import FakeClock from '../drivenAdapters/forGettingTheTime/FakeClock'
-import InMemoryDatabase from '../drivenAdapters/InMemoryDatabase'
+import InMemoryDatabase from '../drivenAdapters/forPersisting/InMemoryDatabase'
 
 describe('app', () => {
     let app: App
