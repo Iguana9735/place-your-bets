@@ -452,10 +452,6 @@ describe('app', () => {
     })
 
     // TODO
-    // Caches the bitcoin price - i.e. it does not fetch it every time it is asked to do so
-    // Test how numerical precision works. Perhaps it's better to settle on a given precision to begin with, and store
-    //  the prices as integers
     // List of guesses returns only the 5 most recent guesses
-    // Scoring is independent across clients
     // Guess resolution has to be somewhat efficient (i.e. don't query lots of stuff on every tick)
 })
