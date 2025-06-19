@@ -9,6 +9,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import {
     DynamoDBDocumentClient,
     PutCommand,
+    QueryCommand,
     UpdateCommand,
 } from '@aws-sdk/lib-dynamodb'
 
@@ -33,8 +34,33 @@ export default class DynamoDBPersistence implements ForPersisting {
     docClient = DynamoDBDocumentClient.from(this.client)
 
     async getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
-        return _.cloneDeep(
-            this.guesses.filter((guess) => guess.playerId === playerId)
+        const command = new QueryCommand({
+            TableName: GUESS_TABLE_NAME,
+            IndexName: 'playerId-submittedAt',
+            KeyConditionExpression: '#playerId = :playerIdValue',
+            ExpressionAttributeNames: {
+                '#playerId': 'playerId',
+            },
+            ExpressionAttributeValues: {
+                ':playerIdValue': playerId,
+            },
+            ScanIndexForward: false,
+            Limit: 5,
+        })
+
+        const output = await this.docClient.send(command)
+
+        return (
+            output.Items?.map((item) => ({
+                id: item.id as string,
+                playerId: item.playerId as string,
+                submittedAt: new Date(item.submittedAt as number),
+                priceAtSubmission: item.priceAtSubmission as number,
+                direction: item.direction as GuessDirection,
+                resolvedAt: new Date(item.submittedAt as number),
+                priceAtResolution: item.priceAtResolution as number,
+                result: item.result as GuessResult,
+            })) || []
         )
     }
 
