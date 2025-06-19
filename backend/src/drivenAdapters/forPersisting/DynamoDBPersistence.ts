@@ -13,6 +13,42 @@ import {
     UpdateCommand,
 } from '@aws-sdk/lib-dynamodb'
 
+export default class DynamoDBPersistence implements ForPersisting {
+    readonly guessOperations: GuessTableOperations
+    readonly scoreOperations: ScoreTableOperations
+
+    constructor() {
+        const client = new DynamoDBClient({})
+        const docClient = DynamoDBDocumentClient.from(client)
+        this.guessOperations = new GuessTableOperations(docClient)
+        this.scoreOperations = new ScoreTableOperations(docClient)
+    }
+
+    async getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
+        return this.guessOperations.getRecentGuessesOfClient(playerId)
+    }
+
+    async insertGuess(guessInsert: GuessInsert): Promise<void> {
+        return this.guessOperations.insertGuess(guessInsert)
+    }
+
+    async updateGuess(guessId: string, update: GuessUpdate) {
+        return this.guessOperations.updateGuess(guessId, update)
+    }
+
+    async getUnresolvedGuesses(): Promise<Guess[]> {
+        return this.guessOperations.getUnresolvedGuesses()
+    }
+
+    async getScore(playerId: string): Promise<number | undefined> {
+        return this.scoreOperations.getScore(playerId)
+    }
+
+    async setScore(playerId: string, score: number): Promise<void> {
+        return this.scoreOperations.setScore(playerId, score)
+    }
+}
+
 type PersistedGuess = {
     id: string
     playerId: string
@@ -24,19 +60,20 @@ type PersistedGuess = {
     result: 'CORRECT' | 'INCORRECT' | 'UNRESOLVED'
 }
 
-const GUESS_TABLE_NAME = 'place-your-bets-guesses'
-
-export default class DynamoDBPersistence implements ForPersisting {
+class GuessTableOperations {
+    readonly TABLE_NAME = 'place-your-bets-guesses'
     private guesses: Guess[] = []
-    private scores: Record<string, number> = {}
 
-    client = new DynamoDBClient({})
-    docClient = DynamoDBDocumentClient.from(this.client)
+    readonly docClient: DynamoDBDocumentClient
+
+    constructor(docClient: DynamoDBDocumentClient) {
+        this.docClient = docClient
+    }
 
     async getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
         return this.queryGuesses(
             new QueryCommand({
-                TableName: GUESS_TABLE_NAME,
+                TableName: this.TABLE_NAME,
                 IndexName: 'playerId-submittedAt',
                 KeyConditionExpression: '#playerId = :playerIdValue',
                 ExpressionAttributeNames: {
@@ -62,7 +99,7 @@ export default class DynamoDBPersistence implements ForPersisting {
         guessInsert.resolvedAt?.getTime()
 
         const command = new PutCommand({
-            TableName: GUESS_TABLE_NAME,
+            TableName: this.TABLE_NAME,
             Item: this.toPersistedGuess(guess),
         })
         await this.docClient.send(command)
@@ -76,7 +113,7 @@ export default class DynamoDBPersistence implements ForPersisting {
 
         Object.assign(savedGuess, update)
         const command = new UpdateCommand({
-            TableName: GUESS_TABLE_NAME,
+            TableName: this.TABLE_NAME,
             Key: { id: guessId },
             UpdateExpression: `SET #resolvedAt = :newResolvedAt,
                                    #priceAtResolution = :newPriceAtResolution,
@@ -99,7 +136,7 @@ export default class DynamoDBPersistence implements ForPersisting {
     async getUnresolvedGuesses(): Promise<Guess[]> {
         return this.queryGuesses(
             new QueryCommand({
-                TableName: GUESS_TABLE_NAME,
+                TableName: this.TABLE_NAME,
                 IndexName: 'result',
                 KeyConditionExpression: '#result = :resultValue',
                 ExpressionAttributeNames: {
@@ -115,14 +152,6 @@ export default class DynamoDBPersistence implements ForPersisting {
     private async queryGuesses(command: QueryCommand): Promise<Guess[]> {
         const output = await this.docClient.send(command)
         return output.Items?.map((item) => this.fromDynamoDbItem(item)) || []
-    }
-
-    async getScore(playerId: string): Promise<number | undefined> {
-        return this.scores[playerId]
-    }
-
-    async setScore(playerId: string, score: number): Promise<void> {
-        this.scores[playerId] = score
     }
 
     private toPersistedGuess(guess: Guess): PersistedGuess {
@@ -150,5 +179,23 @@ export default class DynamoDBPersistence implements ForPersisting {
                     ? undefined
                     : (item.result as GuessResult),
         }
+    }
+}
+
+class ScoreTableOperations {
+    private scores: Record<string, number> = {}
+
+    readonly docClient: DynamoDBDocumentClient
+
+    constructor(docClient: DynamoDBDocumentClient) {
+        this.docClient = docClient
+    }
+
+    async getScore(playerId: string): Promise<number | undefined> {
+        return this.scores[playerId]
+    }
+
+    async setScore(playerId: string, score: number): Promise<void> {
+        this.scores[playerId] = score
     }
 }
