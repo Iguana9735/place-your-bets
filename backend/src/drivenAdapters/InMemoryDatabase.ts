@@ -14,41 +14,36 @@ export default class InMemoryDatabase implements ForPersisting {
     private guesses: GuessWithplayerId[] = []
     private scores: Record<string, number> = {}
 
-    getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
-        return Promise.resolve(
-            _.cloneDeep(
-                this.guesses.filter((guess) => guess.playerId === playerId)
-            )
+    async getRecentGuessesOfClient(playerId: string): Promise<Guess[]> {
+        return _.cloneDeep(
+            this.guesses.filter((guess) => guess.playerId === playerId)
         )
     }
 
-    insertGuess(guess: GuessInsert): Promise<void> {
+    async insertGuess(guess: GuessInsert): Promise<void> {
         this.guesses.push({
             ...guess,
             id: uuidv4(),
         })
-        return Promise.resolve()
     }
 
-    updateGuess(guessId: string, update: GuessUpdate) {
+    async updateGuess(guessId: string, update: GuessUpdate) {
         const savedGuess = this.guesses.find((guess) => guess.id === guessId)
         if (savedGuess) {
             Object.assign(savedGuess, update)
         }
-        return Promise.resolve()
     }
 
-    getUnresolvedGuesses(): Promise<Guess[]> {
+    async getUnresolvedGuesses(): Promise<Guess[]> {
         const unresolvedGuesses = this.guesses.filter((guess) => !guess.result)
-        return Promise.resolve(_.cloneDeep(unresolvedGuesses))
+        return _.cloneDeep(unresolvedGuesses)
     }
 
-    getScore(playerId: string): Promise<number | undefined> {
-        return Promise.resolve(this.scores[playerId])
+    async getScore(playerId: string): Promise<number | undefined> {
+        return this.scores[playerId]
     }
 
-    setScore(playerId: string, score: number): Promise<void> {
+    async setScore(playerId: string, score: number): Promise<void> {
         this.scores[playerId] = score
-        return Promise.resolve()
     }
 }
