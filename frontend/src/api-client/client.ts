@@ -2,7 +2,7 @@ import { Configuration, DefaultApi } from './gen'
 import type { ClientInfo } from '../model/model.ts'
 
 const config = new Configuration({
-    basePath: 'http://localhost:3000',
+    basePath: import.meta.env.VITE_BACKEND_URL
 })
 const apiClient = new DefaultApi(config)
 
