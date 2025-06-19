@@ -5,22 +5,8 @@ export default class RandomBitcoinPriceSource
     implements ForGettingBitcoinPrice
 {
     private currentPrice: number = 100000
-    private lastUpdated = new Date()
 
     getBitcoinPrice(): Promise<number> {
-        if (this.isTimeToUpdate()) {
-            this.updatePrice()
-        }
-        return Promise.resolve(this.currentPrice)
-    }
-
-    private isTimeToUpdate() {
-        const timeSinceLastUpdate =
-            new Date().getTime() - this.lastUpdated.getTime()
-        return timeSinceLastUpdate >= 5000
-    }
-
-    private updatePrice() {
         switch (randomInt(0, 3)) {
             case 0:
                 // No change
@@ -32,6 +18,6 @@ export default class RandomBitcoinPriceSource
                 this.currentPrice = this.currentPrice * 0.99
                 break
         }
-        this.lastUpdated = new Date()
+        return Promise.resolve(this.currentPrice)
     }
 }
