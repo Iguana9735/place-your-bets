@@ -6,7 +6,11 @@ import Guess, { GuessDirection, GuessResult } from '../../app/Guess'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
+import {
+    DynamoDBDocumentClient,
+    PutCommand,
+    UpdateCommand,
+} from '@aws-sdk/lib-dynamodb'
 
 type PersistedGuess = {
     id: string
@@ -18,6 +22,8 @@ type PersistedGuess = {
     priceAtResolution?: number
     result?: GuessResult
 }
+
+const GUESS_TABLE_NAME = 'place-your-bets-guesses'
 
 export default class DynamoDBPersistence implements ForPersisting {
     private guesses: Guess[] = []
@@ -39,24 +45,42 @@ export default class DynamoDBPersistence implements ForPersisting {
         }
         this.guesses.push(guess)
 
-        const persistedGuess: PersistedGuess = {
-            ...guess,
-            submittedAt: guessInsert.submittedAt.getTime(),
-            resolvedAt: guessInsert.resolvedAt?.getTime(),
-        }
+        guessInsert.submittedAt.getTime()
+        guessInsert.resolvedAt?.getTime()
 
         const command = new PutCommand({
-            TableName: 'place-your-bets-guesses',
-            Item: persistedGuess,
+            TableName: GUESS_TABLE_NAME,
+            Item: this.toPersistedGuess(guess),
         })
         await this.docClient.send(command)
     }
 
     async updateGuess(guessId: string, update: GuessUpdate) {
         const savedGuess = this.guesses.find((guess) => guess.id === guessId)
-        if (savedGuess) {
-            Object.assign(savedGuess, update)
+        if (!savedGuess) {
+            return
         }
+
+        Object.assign(savedGuess, update)
+        const command = new UpdateCommand({
+            TableName: GUESS_TABLE_NAME,
+            Key: { id: guessId },
+            UpdateExpression: `SET #resolvedAt = :newResolvedAt,
+                                   #priceAtResolution = :newPriceAtResolution,
+                                   #result = :newResult
+                                   `,
+            ExpressionAttributeNames: {
+                '#resolvedAt': 'resolvedAt',
+                '#priceAtResolution': 'priceAtResolution',
+                '#result': 'result',
+            },
+            ExpressionAttributeValues: {
+                ':newResolvedAt': update.resolvedAt?.getTime(),
+                ':newPriceAtResolution': update.priceAtResolution,
+                ':newResult': update.result,
+            },
+        })
+        await this.docClient.send(command)
     }
 
     async getUnresolvedGuesses(): Promise<Guess[]> {
@@ -70,5 +94,13 @@ export default class DynamoDBPersistence implements ForPersisting {
 
     async setScore(playerId: string, score: number): Promise<void> {
         this.scores[playerId] = score
+    }
+
+    private toPersistedGuess(guess: Guess): PersistedGuess {
+        return {
+            ...guess,
+            submittedAt: guess.submittedAt.getTime(),
+            resolvedAt: guess.resolvedAt?.getTime(),
+        }
     }
 }
