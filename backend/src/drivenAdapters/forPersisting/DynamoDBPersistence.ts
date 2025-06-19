@@ -189,7 +189,7 @@ class GuessTableOperations {
 }
 
 class ScoreTableOperations {
-    private scores: Record<string, number> = {}
+    readonly TABLE_NAME = 'place-your-bets-scores'
 
     readonly docClient: DynamoDBDocumentClient
 
@@ -198,10 +198,28 @@ class ScoreTableOperations {
     }
 
     async getScore(playerId: string): Promise<number | undefined> {
-        return this.scores[playerId]
+        const output = await this.docClient.send(
+            new GetCommand({
+                TableName: this.TABLE_NAME,
+                Key: { playerId: playerId },
+            })
+        )
+
+        return output.Item ? parseInt(output.Item.score as string) : undefined
     }
 
     async setScore(playerId: string, score: number): Promise<void> {
-        this.scores[playerId] = score
+        const command = new UpdateCommand({
+            TableName: this.TABLE_NAME,
+            Key: { playerId: playerId },
+            UpdateExpression: `SET #score = :newScore`,
+            ExpressionAttributeNames: {
+                '#score': 'score',
+            },
+            ExpressionAttributeValues: {
+                ':newScore': score,
+            },
+        })
+        await this.docClient.send(command)
     }
 }
