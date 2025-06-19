@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import {
     DynamoDBDocumentClient,
+    GetCommand,
     NativeAttributeValue,
     PutCommand,
     QueryCommand,
@@ -62,7 +63,6 @@ type PersistedGuess = {
 
 class GuessTableOperations {
     readonly TABLE_NAME = 'place-your-bets-guesses'
-    private guesses: Guess[] = []
 
     readonly docClient: DynamoDBDocumentClient
 
@@ -93,7 +93,6 @@ class GuessTableOperations {
             ...guessInsert,
             id: uuidv4(),
         }
-        this.guesses.push(guess)
 
         guessInsert.submittedAt.getTime()
         guessInsert.resolvedAt?.getTime()
@@ -106,12 +105,19 @@ class GuessTableOperations {
     }
 
     async updateGuess(guessId: string, update: GuessUpdate) {
-        const savedGuess = this.guesses.find((guess) => guess.id === guessId)
-        if (!savedGuess) {
+        const itemExists: boolean = await this.docClient
+            .send(
+                new GetCommand({
+                    TableName: this.TABLE_NAME,
+                    Key: { id: guessId },
+                })
+            )
+            .then((result) => !!result.Item)
+
+        if (!itemExists) {
             return
         }
 
-        Object.assign(savedGuess, update)
         const command = new UpdateCommand({
             TableName: this.TABLE_NAME,
             Key: { id: guessId },
