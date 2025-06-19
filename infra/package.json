@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "recreate-tables": "ts-node src/recreate-tables.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3"
+  }
+}
