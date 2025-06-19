@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-api-client": " npx openapi-generator-cli generate --generator-key place-your-bets-api"
+    "generate-api-client": " npx openapi-generator-cli generate --generator-key place-your-bets-api && npm run generate-api-client:fix-ts",
+    "generate-api-client:fix-ts": "find ./src/api-client/gen -name '*.ts' -exec sed -i '1i// @ts-nocheck' {} \\;"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
