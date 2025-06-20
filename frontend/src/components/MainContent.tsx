@@ -10,10 +10,13 @@ type Props = {
 }
 
 const MainContent = ({ clientInfo, onSubmitGuess }: Props) => {
+
+    const hasPendingGuesses = clientInfo.recentGuesses.some(guess => !guess.result)
+
     return <Grid container spacing={2}>
         <Grid size={8}>
             <Stack spacing={2}>
-                <GuessButtons onSubmitGuess={onSubmitGuess} />
+                <GuessButtons disabled={hasPendingGuesses} onSubmitGuess={onSubmitGuess} />
                 <GuessList guesses={clientInfo.recentGuesses} />
             </Stack>
         </Grid>
@@ -24,12 +27,14 @@ const MainContent = ({ clientInfo, onSubmitGuess }: Props) => {
             </Stack>
         </Grid>
     </Grid>
-
 }
 
-const GuessButtons = ({ onSubmitGuess }: { onSubmitGuess: (direction: 'UP' | 'DOWN') => void }) => {
+const GuessButtons = ({ disabled, onSubmitGuess }: {
+    disabled: boolean,
+    onSubmitGuess: (direction: 'UP' | 'DOWN') => void
+}) => {
     return (
-        <ButtonGroup orientation='vertical' aria-label='Vertical button group'>
+        <ButtonGroup disabled={disabled} orientation='vertical' aria-label='Vertical button group'>
             <Button onClick={() => onSubmitGuess('UP')}>Up</Button>,
             <Button onClick={() => onSubmitGuess('DOWN')}>Down</Button>,
         </ButtonGroup>
