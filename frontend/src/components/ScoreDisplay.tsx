@@ -1,12 +1,12 @@
-import ValueDisplay from "./ValueDisplay.tsx";
+import ValueDisplay from './ValueDisplay.tsx'
 
 type Props = {
     score: number
 }
 
-function ScoreDisplay({score}: Props) {
+function ScoreDisplay({ score }: Props) {
     return (
-        <ValueDisplay title={"Your score"} value={score.toString()}/>
+        <ValueDisplay title={'Your score'}>{score.toString()}</ValueDisplay>
     )
 }
 

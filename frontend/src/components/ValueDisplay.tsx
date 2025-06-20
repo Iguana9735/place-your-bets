@@ -1,39 +1,40 @@
-import {Paper, styled,} from "@mui/material";
+import { Paper, styled } from '@mui/material'
+import type { ReactNode } from 'react'
 
 type Props = {
     title: string
-    value: string
+    children: ReactNode
 }
 
-function ValueDisplay({title, value}: Props) {
+function ValueDisplay({ title, children }: Props) {
 
     return (
         <Wrapper>
             <Title>{title}</Title>
-            <Value>{value}</Value>
+            <Value>{children}</Value>
         </Wrapper>
     )
 }
 
-const Wrapper = styled(Paper)(({theme}) => ({
+const Wrapper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2),
     gap: theme.spacing(1),
-    display: "flex",
-    flexWrap: "wrap",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "stretch"
-}));
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+}))
 
-const Title = styled('div')(({theme}) => ({
+const Title = styled('div')(({ theme }) => ({
     ...theme.typography.body1,
-    color: theme.palette.text.primary
-}));
+    color: theme.palette.text.primary,
+}))
 
-const Value = styled('div')(({theme}) => ({
+const Value = styled('div')(({ theme }) => ({
     ...theme.typography.body1,
     fontSize: 20,
-    fontWeight: "bold"
-}));
+    fontWeight: 'bold',
+}))
 
 export default ValueDisplay
