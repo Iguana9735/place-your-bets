@@ -15,7 +15,7 @@ const TickerArrows = ({ value }: { value: number }) => {
         }
         setPrevValue(value)
 
-        const timeout = setTimeout(() => setMovement(undefined), 800)
+        const timeout = setTimeout(() => setMovement(undefined), 900)
         return () => clearTimeout(timeout)
     }, [value])
 
@@ -32,11 +32,11 @@ const Arrow = ({ variant }: { variant: 'UP' | 'DOWN' }) => {
             opacity: 1,
             transition: 'opacity 1s',
             lineHeight: 0,
-            animation: 'fadeOut 0.5s ease-out 0.1s forwards',
+            animation: 'fadeOut 0.7s ease-out 0.1s forwards',
         }}
     >
         {variant == 'UP' ? <KeyboardArrowUp color={'success'} /> : <KeyboardArrowDown color={'error'} />}
-        <style jsx>{`
+        <style>{`
             @keyframes fadeOut {
                 from {
                     opacity: 1;
@@ -45,7 +45,8 @@ const Arrow = ({ variant }: { variant: 'UP' | 'DOWN' }) => {
                     opacity: 0;
                 }
             }
-        `}</style></span>
+        `}</style>
+    </span>
 }
 
 export default TickerArrows
